@@ -7,9 +7,9 @@
 extr_cep(addresses, subsector_as_zip = FALSE)
 }
 \arguments{
-\item{subsector_as_zip}{Logical. If TRUE, can extracts a 5-digit subsector pattern as ZIP code when available. Default is FALSE.}
+\item{addresses}{A character vector or string containing the address information.}
 
-\item{x}{A character vector or string containing the address information.}
+\item{subsector_as_zip}{Logical. If TRUE, can extracts a 5-digit subsector pattern as ZIP code when available. Default is FALSE.}
 }
 \value{
 An 8-digit or 5-digit ZIP code if found, otherwise NA.

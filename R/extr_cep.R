@@ -2,7 +2,7 @@
 #'
 #' This function extracts an 8-digit ZIP code from a string representing an address.
 #'
-#' @param x A character vector or string containing the address information.
+#' @param addresses A character vector or string containing the address information.
 #' @param subsector_as_zip Logical. If TRUE, can extracts a 5-digit subsector pattern as ZIP code when available. Default is FALSE.
 #' @return An 8-digit or 5-digit ZIP code if found, otherwise NA.
 #'

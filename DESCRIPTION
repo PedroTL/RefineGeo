@@ -2,18 +2,14 @@ Package: RefineGeo
 Type: Package
 Title: Facilitate Address Standardization and Intelligent Selection of Geocoding Coordinates
 Version: 0.1.0
-Authors@R: person(
-    "Lucas João P. T. T.", 
-    email = "pedrottlucas@gmail.com", 
-    role = c("aut", "cre"),
-    funder = c(
-        "FEAC Foundation", 
-        "Pontifical Catholic University of Campinas"
-    )
-)Maintainer: João P. T. T. Lucas <pedrottlucas@gmail.com>
+Authors@R: c(
+    person("Lucas João P. T. T.", email = "pedrottlucas@gmail.com", role = c("aut", "cre")),
+    person("FEAC Foundation", role = "fnd"),
+    person("Pontifical Catholic University of Campinas", role = "fnd"))
+Maintainer: João P. T. T. Lucas <pedrottlucas@gmail.com>
 Description: RefineGeo is an R package designed to streamline address standardization and intelligent selection of geocoding coordinates. 
     It enhances data accuracy and precision in location-based analyses by providing robust tools for refining addresses and selecting optimal coordinates based on a proprietary methodology.
-License: `use_mit_license()`
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

@@ -7,16 +7,16 @@
 \format{
 A data frame with 99 rows and 5 columns:
 \describe{
-  \item{address}{Contains address information.}
-  \item{cep}{Represents the CEP (equivalent to Zip Code) corresponding to the address.}
-  \item{municipality}{Specifies the name of the municipality (Campinas).}
-  \item{state}{Two-letter abbreviation representing the state (SP - São Paulo).}
-  \item{country}{Specifies the name of the country (Brazil).}
-  ...
+\item{address}{Contains address information.}
+\item{cep}{Represents the CEP (equivalent to Zip Code) corresponding to the address.}
+\item{municipality}{Specifies the name of the municipality (Campinas).}
+\item{state}{Two-letter abbreviation representing the state (SP - São Paulo).}
+\item{country}{Specifies the name of the country (Brazil).}
+...
 }
 }
 \source{
-<https://github.com/PedroTL/geocoding-mini-curso-r/tree/main/Bancos%20de%20Dados>
+\url{https://github.com/PedroTL/geocoding-mini-curso-r/tree/main/Bancos\%20de\%20Dados}
 }
 \usage{
 sample_address

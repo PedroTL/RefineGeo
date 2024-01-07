@@ -18,11 +18,13 @@ removing accents, and removing extra whitespace.
 }
 \details{
 This function standardizes the formatting of an address by performing the following steps:
-1. Removes punctuation marks from the address.
-2. Converts the entire address to uppercase.
-3. Removes accents and special characters.
-4. Removes extra whitespace to ensure uniform spacing between words.
+\enumerate{
+\item Removes punctuation marks from the address.
+\item Converts the entire address to uppercase.
+\item Removes accents and special characters.
+\item Removes extra whitespace to ensure uniform spacing between words.
 The cleaned address is returned with standardized formatting.
+}
 }
 \examples{
 library(stringr)

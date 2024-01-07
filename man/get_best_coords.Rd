@@ -61,7 +61,7 @@ get_best_coords(
 
 \item{subsector_as_zip}{Logical. If TRUE, can extracts a 5-digit subsector pattern as ZIP code when available. Default is FALSE.}
 
-\item{cep_comparison}{Logical Value. If TRUE, the columns with the input_addr, output_addr_1, output_addr_2, output_addr_3 must be provided, it also demands that cep_confirmation = TRUE. Uses the compare_cep to compare the CEP from the input_addr with the three outputs CEPs. The `strict_check` can be set to TRUE to evaluate the five digits CEPs, if subsector_as_zip = TRUE is recommended that strict_check = TRUE. Default is FALSE.}
+\item{cep_comparison}{Logical Value. If TRUE, the columns with the input_addr, output_addr_1, output_addr_2, output_addr_3 must be provided, it also demands that cep_confirmation = TRUE. Uses the compare_cep to compare the CEP from the input_addr with the three outputs CEPs. The \code{strict_check} can be set to TRUE to evaluate the five digits CEPs, if subsector_as_zip = TRUE is recommended that strict_check = TRUE. Default is FALSE.}
 
 \item{strict_check}{Logical indicating whether to perform strict checking on 5-digit ZIP codes. If TRUE, evaluates 5-digit codes; if FALSE, evaluates only 8-digit codes. Default is FALSE.}
 }
@@ -73,19 +73,21 @@ Calculates distances between latitude and longitude pairs, creating correspondin
 Adds a column identifying the shortest distance source if specified.
 }
 \details{
-This function computes distances between latitude and longitude pairs, generating new columns in the dataframe for each pairwise distance based on the given `dist_prefix`, indicating the source of the shortest distance obtained from Geocoding services.
+This function computes distances between latitude and longitude pairs, generating new columns in the dataframe for each pairwise distance based on the given \code{dist_prefix}, indicating the source of the shortest distance obtained from Geocoding services.
 Distances are calculated using the Haversine formula, resulting in kilometers.
 The function creates three distance columns: \cr
-- `dist_prefix_1_2`: Distance between `lat_col1` and `lon_col1` with `lat_col2` and `lon_col2`. \cr
-- `dist_prefix_1_3`: Distance between `lat_col1` and `lon_col1` with `lat_col3` and `lon_col3`. \cr
-- `dist_prefix_2_3`: Distance between `lat_col2` and `lon_col2` with `lat_col3` and `lon_col3`. \cr
+\itemize{
+\item \code{dist_prefix_1_2}: Distance between \code{lat_col1} and \code{lon_col1} with \code{lat_col2} and \code{lon_col2}. \cr
+\item \code{dist_prefix_1_3}: Distance between \code{lat_col1} and \code{lon_col1} with \code{lat_col3} and \code{lon_col3}. \cr
+\item \code{dist_prefix_2_3}: Distance between \code{lat_col2} and \code{lon_col2} with \code{lat_col3} and \code{lon_col3}. \cr
 \cr
-If `short_distance = TRUE`, a new column is appended to the dataframe, identifying the origin of the shortest distance from Geocoding services. \cr
-The `mdc = TRUE` option is available only if `short_distance = TRUE`. It computes the Method of Double Confirmation, adding three new columns, each representing a Geocoding service. Points are attributed based on the closest coordinates confirmed through the shortest distance column. This feature can be used to rank the quality of Geocoding services. \cr
-The `summarize_mdc = TRUE` options is available only if `mdc = TRUE`. It computes a new data frame, summarizing the count of points for each geocoding service. This enables the services to be ranked. \cr
-The `cep_confirmation = TRUE` works with 4 addresses columns, one being the input given to the geocoding services and three outputs addresses. Under the hood, it uses the `extr_cep` to extract CEP from the four string, argument `subsector_as_zip = TRUE` allows five digits CEPs to be considered. \cr
-The `cep_comparison = TRUE` works when `cep_confirmation = TRUE` and all the 4 addresses columns are provided. Under the hood uses the `compare_cep` to check if the CEP found in the input address is the same as the CEPs found in the three outputs addresses. The `strict_check = TRUE` evaluate CEPs whit five digits in the equality. It is recommended that if `subsector_as_zip = TRUE`, `strict_check = TRUE` as well. \cr
+If \code{short_distance = TRUE}, a new column is appended to the dataframe, identifying the origin of the shortest distance from Geocoding services. \cr
+The \code{mdc = TRUE} option is available only if \code{short_distance = TRUE}. It computes the Method of Double Confirmation, adding three new columns, each representing a Geocoding service. Points are attributed based on the closest coordinates confirmed through the shortest distance column. This feature can be used to rank the quality of Geocoding services. \cr
+The \code{summarize_mdc = TRUE} options is available only if \code{mdc = TRUE}. It computes a new data frame, summarizing the count of points for each geocoding service. This enables the services to be ranked. \cr
+The \code{cep_confirmation = TRUE} works with 4 addresses columns, one being the input given to the geocoding services and three outputs addresses. Under the hood, it uses the \code{extr_cep} to extract CEP from the four string, argument \code{subsector_as_zip = TRUE} allows five digits CEPs to be considered. \cr
+The \code{cep_comparison = TRUE} works when \code{cep_confirmation = TRUE} and all the 4 addresses columns are provided. Under the hood uses the \code{compare_cep} to check if the CEP found in the input address is the same as the CEPs found in the three outputs addresses. The \code{strict_check = TRUE} evaluate CEPs whit five digits in the equality. It is recommended that if \code{subsector_as_zip = TRUE}, \code{strict_check = TRUE} as well. \cr
 All new columns are appended to the input dataframe. \cr
+}
 
 \cr
 For more details about the Method of Double Confirmation (MDC), visit: https://feac.org.br/wp-content/uploads/2023/10/Geocodificacao_FEAC.pdf?portfolioCats=3105#new_tab \cr

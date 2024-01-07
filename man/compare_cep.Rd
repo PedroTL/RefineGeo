@@ -19,7 +19,7 @@ Default is FALSE.}
 }
 \value{
 Returns a vector of 1s and 0s indicating the comparison result for each row of ZIP codes in the dataframe.
-        Returns NA for rows not adhering to the criteria (e.g., not 8 or 5 digits).
+Returns NA for rows not adhering to the criteria (e.g., not 8 or 5 digits).
 }
 \description{
 This function compares two ZIP codes for equality based on specific criteria.

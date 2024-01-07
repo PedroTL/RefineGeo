@@ -17,6 +17,8 @@ RoxygenNote: 7.2.3
 Imports: stringr, stringi, geosphere, dplyr, sf, geobr, magrittr, data.table
 Suggests: 
     ggplot2,
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0),
     tidygeocoder
 Config/testthat/edition: 3

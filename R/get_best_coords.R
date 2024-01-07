@@ -56,7 +56,7 @@
 #' library(magrittr)
 #'
 #' df <- data.frame(
-#'   input_address = c("Address_1", "Address_1", "Address_1", "Address_1", "Address_1", "Address_1", "Address_1"),
+#'   input_address = c("Addr_1", "Addr_1", "Addr_1", "Addr_1", "Addr_1", "Addr_1", "Addr_1"),
 #'   lat1 = c(-22.71704, -22.71258, -22.77704, -22.74704, NA, NA, NA),
 #'   lon1 = c(-46.91200, -46.90435, -46.97200, -46.91200, NA, NA, NA),
 #'   lat2 = c(-22.72704, -22.71268, -22.72304, NA, -22.72704, NA, NA),
@@ -65,33 +65,22 @@
 #'   lon3 = c(-46.92430, -46.90435, NA, NA, NA, -46.92439, NA)
 #' )
 #'
-#' df_list <- compare_distance(df, "lat1", "lon1", "lat2", "lon2", "lat3", "lon3", "dis", short_distance = TRUE, mdc = TRUE, summarize_mdc = TRUE)
+#' df_list <- get_best_coords(df, "lat1", "lon1", "lat2", "lon2", "lat3", "lon3",
+#'                           "dis", short_distance = TRUE, mdc = TRUE, summarize_mdc = TRUE)
 #'
 #' original_df <- df_list$df
 #' print(original_df)
-#' # Expected Return
-#' # address   |  lat1    |  lon1  |  lat2  |  lon2  |  lat3  |  lon3  | dis_1_2 | dis_1_3 | dis_2_3 | shortest_distance |    dis_1  |    dis_2  |    dis_3  |
-#' # Address_1 | -22.7170 | -46.91 | -22.72 | -46.93 | -22.75 | -46.92 |  2.33   |  4.62   | 3.43    |     dis_1_2       |      1    |     1     |     0     |
-#' # Address_2 | -22.7125 | -46.90 | -22.71 | -46.90 | -22.71 | -46.90 |  0.01   |    0    | 0.01    |     dis_1_3       |      1    |     0     |     1     |
-#' # Address_3 | -22.7770 | -46.97 | -22.72 | -46.99 |   NA   |   NA   |  6.35   |    NA   |   NA    |     dis_1_2       |      1    |     1     |     0     |
-#' # Address_4 | -22.747  | -46.91 |   NA   |   NA   |   NA   |   NA   |   NA    |    NA   |   NA    | just lat1 and lon1|      0    |     0     |     0     |
-#' # Address_5 |    NA    |    NA  | -22.72 | -46.92 |   NA   |   NA   |   NA    |    NA   |   NA    | just lat2 and lon2|      0    |     0     |     0     |
-#' # Address_6 |    NA    |    NA  |   NA   |   NA   | -22.77 | -46.92 |   NA    |    NA   |   NA    | just lat3 and lon3|      0    |     0     |     0     |
-#' # Address_7 |    NA    |    NA  |   NA   |   NA   |   NA   |   NA   |   NA    |    NA   |   NA    |   No Coordinates  |      0    |     0     |     0     |
 #'
 #' mdc_summary <- df_list$mdc_summary
 #' print(mdc_summary)
-#' # Expected Return
-#' # | dis_1 | dis_2 | dis_3 |
-#' # |   3   |   2   |   1   |
 #'
 #' @export
-#' @rdname compare_distance
+#' @rdname get_best_coords
 get_best_coords <- function(df, lat_col1, lon_col1, lat_col2, lon_col2, lat_col3, lon_col3,
-                             dist_prefix, short_distance = FALSE, mdc = FALSE, summarize_mdc = FALSE,
-                             cep_confirmation = FALSE, input_addr = NULL, output_addr_1 = NULL,
-                             output_addr_2 = NULL, output_addr_3 = NULL, subsector_as_zip = FALSE,
-                             cep_comparison = FALSE, strict_check = FALSE) {
+                            dist_prefix, short_distance = FALSE, mdc = FALSE, summarize_mdc = FALSE,
+                            cep_confirmation = FALSE, input_addr = NULL, output_addr_1 = NULL,
+                            output_addr_2 = NULL, output_addr_3 = NULL, subsector_as_zip = FALSE,
+                            cep_comparison = FALSE, strict_check = FALSE) {
   cols <- list(
     c(lat_col1, lon_col1, lat_col2, lon_col2, paste0(dist_prefix, "_1_2")),
     c(lat_col1, lon_col1, lat_col3, lon_col3, paste0(dist_prefix, "_1_3")),

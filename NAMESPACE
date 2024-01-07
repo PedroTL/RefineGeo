@@ -2,7 +2,6 @@
 
 export(clean_address)
 export(compare_cep)
-export(compare_distance)
 export(extr_cep)
 export(get_best_coords)
 export(points_out)

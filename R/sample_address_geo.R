@@ -1,0 +1,24 @@
+#' Sample Addresses in Campinas, São Paulo (SP) - Geocoded across Three Services
+#'
+#' This dataset contains a randomly selected sample of addresses located in Campinas, São Paulo (SP). It provides information on different randomly chosen addresses within the city, including Latitude and Longitude, along with output address and CEP (equivalent to Zip Code) details from three distinct Geocoding services.
+#'
+#' @format A data frame with 99 rows and 15 columns:
+#' \describe{
+#'   \item{input_addr}{Contains address information used as input in Geocoding.}
+#'   \item{input_cep}{Represents the CEP (equivalent to Zip Code) corresponding to input_addr.}
+#'   \item{output_addr_1}{Output address provided by ArcGIS API through tidygeocoder.}
+#'   \item{output_addr_2}{Output address provided by Bing API through tidygeocoder.}
+#'   \item{output_addr_3}{Output address provided by Here API through tidygeocoder.}
+#'   \item{output_addr_cep_1}{Output CEP provided by ArcGIS API through tidygeocoder.}
+#'   \item{output_addr_cep_2}{Output CEP provided by Bing API through tidygeocoder.}
+#'   \item{output_addr_cep_3}{Output CEP provided by Here API through tidygeocoder.}
+#'   \item{lat1}{Output Latitude provided by ArcGIS API through tidygeocoder.}
+#'   \item{lon1}{Output Longitude provided by ArcGIS API through tidygeocoder.}
+#'   \item{lat2}{Output Latitude provided by Bing API through tidygeocoder.}
+#'   \item{lon2}{Output Longitude provided by Bing API through tidygeocoder.}
+#'   \item{lat3}{Output Latitude provided by Here API through tidygeocoder.}
+#'   \item{lon3}{Output Longitude provided by Here API through tidygeocoder.}
+#'   ...
+#' }
+#' @source <https://github.com/PedroTL/geocoding-tidygeocoder>
+"sample_address_geo"

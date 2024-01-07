@@ -16,10 +16,13 @@ Description: RefineGeo is an R package designed to streamline address standardiz
 License: `use_mit_license()`
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: stringr, stringi, geosphere, dplyr, sf, geobr, magrittr, data.table
 Suggests: 
-    testthat (>= 3.0.0)
+    ggplot2,
+    testthat (>= 3.0.0),
+    tidygeocoder
 Config/testthat/edition: 3
 Depends: 
     R (>= 2.10)

@@ -1,11 +1,24 @@
-bibentry(
-  bibtype  = "Article",
-  title    = "Welcome to the {RefineGeo}",
-  author   = "João Pedro T. T. Lucas",
-  journal  = ,
-  year     = 2024,
-  volume   = ,
-  number   = ,
-  pages    = ,
-  doi      =
+c(
+  bibentry(
+    bibtype = "Manual",
+    title = "{RefineGeo}: Makes Geocoding Comparison Easy",
+    author = c(
+      person("Lucas João P. T. T.", email = "pedrottlucas@gmail.com", role = c("aut", "cre")),
+      person("FEAC Foundation", role = "fnd"),
+      person("Pontifical Catholic University of Campinas", role = "fnd")
+    ),
+    year = "2023",
+    note = "R package version 0.0.1",
+    url = "https://github.com/PedroTL/RefineGeo"
+  ),
+
+  bibentry(
+    bibtype = "TechReport",
+    title = "Geocodificação dos Endereços do CadÚnico de Campinas",
+    author = as.person("Paulo R. S. Oliveira [aut], Raquel Alonso [aut], João Pedro T. T. de Lucas [aut], William Martins [aut]"),
+    year = "2023",
+    institution = "Fundação FEAC",
+    address = "Campinas",
+    url = "https://feac.org.br/wp-content/uploads/2023/10/Geocodificacao_FEAC.pdf?portfolioCats=3100%2C3850%2C4090"
+  )
 )

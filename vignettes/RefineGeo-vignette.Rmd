@@ -117,7 +117,7 @@ For example, this function takes several latitude and longitude pairs from the C
 
 Under the hood, the function utilizes `read_municipality()` from `geobr`. Therefore, a municipality code, along with the year and a `CRS projection`, must be provided.
 
-```{r example_points_out1, warning = FALSE, message = FALSE}
+```{r example_points_out1, warning = FALSE, message = FALSE, results='hide'}
 # Sample data
 df <- data.frame(lat = c(-22.71704, -22.71258, -22.84277, -22.73391, -22.77165),
                  lon = c(-46.91200, -46.90435, -47.07650, -47.00500, -46.98793))
@@ -132,6 +132,7 @@ df_sf_point <- st_as_sf(df,
                         na.fail = FALSE,
                         crs = st_crs(shp_campinas)) # Make the CRS of the points the same as the polygon
 # Plot the polygon
+plot <-
 ggplot() +
   geom_sf(data = shp_campinas, fill = "blue", color = "black") +
   
@@ -143,9 +144,13 @@ ggplot() +
   theme_minimal()
 ```
 
+```{r, example_points_out2, warning = FALSE, message = FALSE, results='hide', fig.width = 7, fig.height = 4}
+print(plot)
+```
+
 In the example, we notice a problem where some points are found outside Campinas-SP. To identify these outside points, this function proves to be quite useful.
 
-```{r example_points_out2, warning = FALSE, message = FALSE}
+```{r example_points_out3, warning = FALSE, message = FALSE}
 # Finding if the coordinates are inside or not the polygon
 df <- points_out(df, "lat", "lon", "out_camp", code_muni = 3509502, year = 2020, polygon_crs = 4326)
 knitr::kable(head(df), align = "c") 
@@ -246,7 +251,7 @@ The process maintains a consistent logic even when no CEP equality exists betwee
 
 The flowchart succinctly illustrates the entire process of selecting the final coordinate.
 
-![Flowchart](https://pedrotl.github.io/images/Chart_one.png)
+<img src="https://pedrotl.github.io/images/Chart_one.png" alt="Flowchart" width="100%">
 
 **Note: Final coordinate selection is still in development**
 

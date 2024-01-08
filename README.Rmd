@@ -239,7 +239,7 @@ The process maintains a consistent logic even when no CEP equality exists betwee
 
 The flowchart succinctly illustrates the entire process of selecting the final coordinate.
 
-![Flowchart](https://pedrotl.github.io/images/Chart_one.png){width = 70%}
+![Flowchart](https://pedrotl.github.io/images/Chart_one.png)
 
 **Note: Final coordinate selection is still in development**
 

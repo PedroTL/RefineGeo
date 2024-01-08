@@ -10,11 +10,11 @@ clean_address(x)
 \item{x}{A character vector or string containing the address to be cleaned.}
 }
 \value{
-Cleaned address with standardized formatting.
+A vector of the same length whit cleaned address in standardized formatting.
 }
 \description{
 This function cleans an address by removing punctuation, converting to uppercase,
-removing accents, and removing extra whitespace.
+removing accents, and removing extra white space.
 }
 \details{
 This function standardizes the formatting of an address by performing the following steps:
@@ -22,7 +22,7 @@ This function standardizes the formatting of an address by performing the follow
 \item Removes punctuation marks from the address.
 \item Converts the entire address to uppercase.
 \item Removes accents and special characters.
-\item Removes extra whitespace to ensure uniform spacing between words.
+\item Removes extra white space to ensure uniform spacing between words.
 The cleaned address is returned with standardized formatting.
 }
 }
@@ -32,4 +32,10 @@ library(stringi)
 x <- c("Samplê ADReEss  -   Wíth PonctuatìõNs::")
 clean_address(x) # Returns "SAMPLE ADDRESS WITH PONCTUATION"
 
+}
+\seealso{
+\code{\link[stringr:str_replace]{stringr::str_replace_all()}} for replacing matches pattern with new text
+\code{\link[stringr:str_trim]{stringr::str_squish()}} for removing whitespace
+\code{\link[stringi:stri_trans_general]{stringi::stri_trans_general()}} for text ransformation
+\code{\link[=toupper]{toupper()}} for changing the string to upper case
 }

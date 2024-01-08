@@ -1,10 +1,16 @@
 #' Clean Address Function
 #'
 #' This function cleans an address by removing punctuation, converting to uppercase,
-#' removing accents, and removing extra whitespace.
+#' removing accents, and removing extra white space.
 #'
 #' @param x A character vector or string containing the address to be cleaned.
-#' @return Cleaned address with standardized formatting.
+#' @return A vector of the same length whit cleaned address in standardized formatting.
+#'
+#' @seealso
+#'    [stringr::str_replace_all()] for replacing matches pattern with new text
+#'    [stringr::str_squish()] for removing whitespace
+#'    [stringi::stri_trans_general()] for text ransformation
+#'    [toupper()] for changing the string to upper case
 #'
 #' @import stringr
 #' @import stringi
@@ -14,10 +20,9 @@
 #' 1. Removes punctuation marks from the address.
 #' 2. Converts the entire address to uppercase.
 #' 3. Removes accents and special characters.
-#' 4. Removes extra whitespace to ensure uniform spacing between words.
+#' 4. Removes extra white space to ensure uniform spacing between words.
 #' The cleaned address is returned with standardized formatting.
 #'
-#' @export
 #' @examples
 #' library(stringr)
 #' library(stringi)

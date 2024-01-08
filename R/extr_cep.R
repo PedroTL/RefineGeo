@@ -1,20 +1,20 @@
-#' Extract ZIP Code from Address
+#' Extract CEP from Address
 #'
-#' This function extracts an 8-digit ZIP code from a string representing an address.
+#' This function extracts an 8-digit or 5-digit CEP from a string representing an address.
 #'
 #' @param addresses A character vector or string containing the address information.
-#' @param subsector_as_zip Logical. If TRUE, can extracts a 5-digit subsector pattern as ZIP code when available. Default is FALSE.
-#' @return An 8-digit or 5-digit ZIP code if found, otherwise NA.
+#' @param subsector_as_zip Logical. If `TRUE`, can extracts a 5-digit sub-sector pattern as CEP, when available. Default is `FALSE.`
+#' @return A vector of the same length with 8-digit. If specified also returns 5-digit CEP when is found, otherwise NA.
 #'
 #' @import stringi
 #' @import stringr
 #'
 #' @details
-#' This function attempts to extract an 8-digit ZIP code from a provided address string.
+#' This function attempts to extract an 8-digit CEP from a provided address string.
 #' It removes punctuation, converts the address to uppercase, and attempts to find a pattern
-#' matching either an 8-digit ZIP code or a 5-digit ZIP code followed by a hyphen and a 3-digit extension.
-#' If the subsector_as_zip argument is TRUE, it will attempt to extract a 5-digit subsector pattern as a ZIP code
-#' when an 8-digit ZIP code is not found.
+#' matching either an 8-digit CEP or a 5-digit CEP followed by a hyphen and a 3-digit extension.
+#' If the `subsector_as_zip` argument is `TRUE`, it will attempt to extract a 5-digit sub-sector pattern as a CEP
+#' when an 8-digit CEP is not found.
 #'
 #' @examples
 #' library(stringr)

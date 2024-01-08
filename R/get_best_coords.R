@@ -3,26 +3,32 @@
 #' Calculates distances between latitude and longitude pairs, creating corresponding distance columns.
 #' Adds a column identifying the shortest distance source if specified.
 #'
-#' @param df A dataframe containing latitude and longitude columns.
-#' @param lat_col1 Column name for the first latitude.
-#' @param lon_col1 Column name for the first longitude.
-#' @param lat_col2 Column name for the second latitude.
-#' @param lon_col2 Column name for the second longitude.
-#' @param lat_col3 Column name for the third latitude.
-#' @param lon_col3 Column name for the third longitude.
+#' @param df A dataframe containing latitude, longitude and address columns.
+#' @param lat_col1,lon_col1,lat_col2,lon_col2,lat_col3,lon_col3 Column name for each latidude and longitude provided by the three Geocoding services.
 #' @param dist_prefix Prefix for the new distance columns.
-#' @param short_distance Logical value. If TRUE, determines the shortest distance source and adds a corresponding column indicating from which services the shortest distances are obtained. Default is FALSE.
-#' @param mdc Logical value. If TRUE, computes the Method of Double Confirmation (MDC). Adds three columns, each corresponding to a specific Geocoding service. The MDC attributes points based on the shortest distance column to the two services that provided the closest coordinates. If only one coordinate is available, no points are attributed. Default is FALSE.
-#' @param summarize_mdc Logical value. If TRUE, computes a new data frame, summarizing the count of the MDC for each of the three services, enabling to rank them.
-#' @param cep_confirmation Logical Value. If TRUE, the columns with the input_addr, output_addr_1, output_addr_2, output_addr_3 must be provided. Uses the extr_cep function to extract CEP from the four provided addresses. The subsector_as_zip can be set to TRUE if 5 digits CEPs must be considered. Default is FALSE
-#' @param cep_comparison Logical Value. If TRUE, the columns with the input_addr, output_addr_1, output_addr_2, output_addr_3 must be provided, it also demands that cep_confirmation = TRUE. Uses the compare_cep to compare the CEP from the input_addr with the three outputs CEPs. The `strict_check` can be set to TRUE to evaluate the five digits CEPs, if subsector_as_zip = TRUE is recommended that strict_check = TRUE. Default is FALSE.
+#' @param short_distance Logical value. If `TRUE`, determines the shortest distance source and adds a corresponding column indicating from which services the shortest distances are obtained. Default is FALSE.
+#' @param mdc Logical value. If `TRUE`, computes the Method of Double Confirmation (MDC). Adds three columns, each corresponding to a specific Geocoding service. The MDC attributes a 'scores points' based on the shortest distance column to the two services that provided the closest coordinates. If only one coordinate is available, no points are attributed. Default is `FALSE`.
+#' @param summarize_mdc Logical value. If `TRUE`, computes a new data frame, summarizing the count of the MDC for each of the three services, enabling to rank them.
+#' @param cep_confirmation Logical Value. If `TRUE`, the columns with the `input_addr`, `output_addr_1`, `output_addr_2`, `output_addr_3` must be provided. Uses the `extr_cep` function to extract CEP from the four provided addresses. The `subsector_as_zip` can be set to `TRUE` if 5 digits CEPs must be considered. Default is `FALSE`
+#' @param cep_comparison Logical Value. If `TRUE`, the columns with the `input_addr`, `output_addr_1`, `output_addr_2`, `output_addr_3` must be provided, it also demands that `cep_confirmation = TRUE`. Uses the compare_cep to compare the CEP from the input_addr with the three outputs CEPs. The `strict_check` can be set to `TRUE` to evaluate the five digits CEPs, if `subsector_as_zip = TRUE` is recommended that `strict_check = TRUE.` Default is `FALSE`.
 #' @param input_addr Column with the complete description of address used in the geocoding process.
-#' @param output_addr_1 Column with the complete returned address description from the first geocoding service.
-#' @param output_addr_2 Column with the complete returned address description from the first geocoding service.
-#' @param output_addr_3 Column with the complete returned address description from the second geocoding service.
-#' @param subsector_as_zip Logical. If TRUE, can extracts a 5-digit subsector pattern as ZIP code when available. Default is FALSE.
-#' @param strict_check Logical indicating whether to perform strict checking on 5-digit ZIP codes. If TRUE, evaluates 5-digit codes; if FALSE, evaluates only 8-digit codes. Default is FALSE.
-#' @return The input data frame with added distance columns and, if specified, columns indicating the shortest distance origin and MDC confirmation points. When summarize_mdc = TRUE, returns a list with the original data frame and a summarized data frame with the count of the MDC for each Geocoding service.
+#' @param output_addr_1,output_addr_2,output_addr_3 Column with the complete returned address description for each of the three Geocoding services.
+#' @param subsector_as_zip Logical. If `TRUE`, can extracts a 5-digit subsector pattern as ZIP code when available. Default is `FALSE`.
+#' @param strict_check Logical indicating whether to perform strict checking on 5-digit ZIP codes. If `TRUE`, evaluates 5-digit codes; if `FALSE`, evaluates only 8-digit codes. Default is `FALSE`.
+#' @return An object of the same type as `.data`. The output has the fallowing proprieties:
+#'
+#' * Added distances columns between the pairwise comparison of three Geocoding services.
+#' * If specified by `short_distance = TRUE` adds a column with the name of the shortest distance between Geocoding services.
+#' * If specified by `cep_confirmation` adds four columns, assigning the respectively CEP contained in the `input_addr`, `output_addr_1`, `output_addr_2`, `output_addr_3`.
+#' * If specified by `cep_comparison` adds three columns, comparing if the CEP found in the `input_addr` is the same as the ones found in the `output_addr_1`, `output_addr_2`, `output_addr_3`.
+#' * If specified by `mdc = TRUE` adds three columns, assigning one 'score point' for each Geocoding service when they confirmed each other by means of the coordinate being the shortest between the three.
+#' * If specified by `summarize_mdc` returns a list whit the original data frame whit the appended columns and a summarized mdc counting each confirmation point by the `mdc` for each of the three Geocoding services.
+#'
+#' @seealso
+#'    [clean_address()] for convenient address cleaning
+#'    [extr_cep()] for convenient CEP pattern extraction
+#'    [compare_cep()] for convenient CEP patter comparison
+#'    [geosphere::distHaversine()] for calculating distances
 #'
 #' @import dplyr
 #' @import geosphere
@@ -33,16 +39,16 @@
 #' This function computes distances between latitude and longitude pairs, generating new columns in the dataframe for each pairwise distance based on the given `dist_prefix`, indicating the source of the shortest distance obtained from Geocoding services.
 #' Distances are calculated using the Haversine formula, resulting in kilometers.
 #' The function creates three distance columns: \cr
-#' - `dist_prefix_1_2`: Distance between `lat_col1` and `lon_col1` with `lat_col2` and `lon_col2`. \cr
-#' - `dist_prefix_1_3`: Distance between `lat_col1` and `lon_col1` with `lat_col3` and `lon_col3`. \cr
-#' - `dist_prefix_2_3`: Distance between `lat_col2` and `lon_col2` with `lat_col3` and `lon_col3`. \cr
+#' * `dist_prefix_1_2`: Distance between `lat_col1` and `lon_col1` with `lat_col2` and `lon_col2`. \cr
+#' * `dist_prefix_1_3`: Distance between `lat_col1` and `lon_col1` with `lat_col3` and `lon_col3`. \cr
+#' * `dist_prefix_2_3`: Distance between `lat_col2` and `lon_col2` with `lat_col3` and `lon_col3`. \cr
 #' \cr
-#' If `short_distance = TRUE`, a new column is appended to the dataframe, identifying the origin of the shortest distance from Geocoding services. \cr
-#' The `mdc = TRUE` option is available only if `short_distance = TRUE`. It computes the Method of Double Confirmation, adding three new columns, each representing a Geocoding service. Points are attributed based on the closest coordinates confirmed through the shortest distance column. This feature can be used to rank the quality of Geocoding services. \cr
-#' The `summarize_mdc = TRUE` options is available only if `mdc = TRUE`. It computes a new data frame, summarizing the count of points for each geocoding service. This enables the services to be ranked. \cr
-#' The `cep_confirmation = TRUE` works with 4 addresses columns, one being the input given to the geocoding services and three outputs addresses. Under the hood, it uses the `extr_cep` to extract CEP from the four string, argument `subsector_as_zip = TRUE` allows five digits CEPs to be considered. \cr
-#' The `cep_comparison = TRUE` works when `cep_confirmation = TRUE` and all the 4 addresses columns are provided. Under the hood uses the `compare_cep` to check if the CEP found in the input address is the same as the CEPs found in the three outputs addresses. The `strict_check = TRUE` evaluate CEPs whit five digits in the equality. It is recommended that if `subsector_as_zip = TRUE`, `strict_check = TRUE` as well. \cr
-#' All new columns are appended to the input dataframe. \cr
+#' * If `short_distance = TRUE`, a new column is appended to the dataframe, identifying the origin of the shortest distance from Geocoding services. \cr
+#' * The `mdc = TRUE` option is available only if `short_distance = TRUE`. It computes the Method of Double Confirmation, adding three new columns, each representing a Geocoding service. Points are attributed based on the closest coordinates confirmed through the shortest distance column. This feature can be used to rank the quality of Geocoding services. \cr
+#' * The `summarize_mdc = TRUE` options is available only if `mdc = TRUE`. It computes a new data frame, summarizing the count of points for each geocoding service. This enables the services to be ranked. \cr
+#' * The `cep_confirmation = TRUE` works with 4 addresses columns, one being the input given to the geocoding services and three outputs addresses. Under the hood, it uses the `extr_cep` to extract CEP from the four string, argument `subsector_as_zip = TRUE` allows five digits CEPs to be considered. \cr
+#' * The `cep_comparison = TRUE` works when `cep_confirmation = TRUE` and all the 4 addresses columns are provided. Under the hood uses the `compare_cep` to check if the CEP found in the input address is the same as the CEPs found in the three outputs addresses. The `strict_check = TRUE` evaluate CEPs whit five digits in the equality. It is recommended that if `subsector_as_zip = TRUE`, `strict_check = TRUE` as well. \cr
+#' * All new columns are appended to the input data frame. \cr
 #'
 #' \cr
 #' For more details about the Method of Double Confirmation (MDC), visit: https://feac.org.br/wp-content/uploads/2023/10/Geocodificacao_FEAC.pdf?portfolioCats=3105#new_tab \cr

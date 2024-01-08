@@ -1,6 +1,6 @@
-#' Check Points Within a Municipality Polygon
+#' Check Points Outside a Municipality Polygon
 #'
-#' This function checks whether the given latitude and longitude points are within the specified municipality polygon.
+#' This function checks whether the given latitude and longitude points are outside the specified municipality polygon.
 #'
 #' @param df A dataframe containing latitude and longitude columns.
 #' @param lat A string indicating the column name for latitude.
@@ -9,7 +9,14 @@
 #' @param code_muni The municipality code for the area of interest.
 #' @param year The year of the municipality data.
 #' @param polygon_crs The coordinate reference system (CRS) for the municipality polygon.
-#' @return Returns a dataframe with an additional column specifying whether the points are within the specified polygon.
+#' @return An object of the same type as `.data`. The output has the fallowing proprieties:
+#' * Added `out_col_name` column specifying witch latitude and longitude are outside giving municipality.
+#' * Keeps the observation but turns the latitude and longitude in NA for points outside boundary.
+#'
+#' @seealso
+#'    [sf::st_as_sf()] for convert foreign object to an sf object
+#'    [sf::st_within()] for checking if points are within the municipality polygon
+#'    [geobr::read_municipality()] for loading municipality
 #'
 #' @import geobr
 #' @import sf

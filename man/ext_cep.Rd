@@ -2,27 +2,27 @@
 % Please edit documentation in R/extr_cep.R
 \name{extr_cep}
 \alias{extr_cep}
-\title{Extract ZIP Code from Address}
+\title{Extract CEP from Address}
 \usage{
 extr_cep(addresses, subsector_as_zip = FALSE)
 }
 \arguments{
 \item{addresses}{A character vector or string containing the address information.}
 
-\item{subsector_as_zip}{Logical. If TRUE, can extracts a 5-digit subsector pattern as ZIP code when available. Default is FALSE.}
+\item{subsector_as_zip}{Logical. If \code{TRUE}, can extracts a 5-digit sub-sector pattern as CEP, when available. Default is \code{FALSE.}}
 }
 \value{
-An 8-digit or 5-digit ZIP code if found, otherwise NA.
+A vector of the same length with 8-digit. If specified also returns 5-digit CEP when is found, otherwise NA.
 }
 \description{
-This function extracts an 8-digit ZIP code from a string representing an address.
+This function extracts an 8-digit or 5-digit CEP from a string representing an address.
 }
 \details{
-This function attempts to extract an 8-digit ZIP code from a provided address string.
+This function attempts to extract an 8-digit CEP from a provided address string.
 It removes punctuation, converts the address to uppercase, and attempts to find a pattern
-matching either an 8-digit ZIP code or a 5-digit ZIP code followed by a hyphen and a 3-digit extension.
-If the subsector_as_zip argument is TRUE, it will attempt to extract a 5-digit subsector pattern as a ZIP code
-when an 8-digit ZIP code is not found.
+matching either an 8-digit CEP or a 5-digit CEP followed by a hyphen and a 3-digit extension.
+If the \code{subsector_as_zip} argument is \code{TRUE}, it will attempt to extract a 5-digit sub-sector pattern as a CEP
+when an 8-digit CEP is not found.
 }
 \examples{
 library(stringr)

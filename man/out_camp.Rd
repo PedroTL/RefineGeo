@@ -2,7 +2,7 @@
 % Please edit documentation in R/points_out.R
 \name{points_out}
 \alias{points_out}
-\title{Check Points Within a Municipality Polygon}
+\title{Check Points Outside a Municipality Polygon}
 \usage{
 points_out(df, lat, lon, out_col_name, code_muni, year, polygon_crs)
 }
@@ -22,10 +22,14 @@ points_out(df, lat, lon, out_col_name, code_muni, year, polygon_crs)
 \item{polygon_crs}{The coordinate reference system (CRS) for the municipality polygon.}
 }
 \value{
-Returns a dataframe with an additional column specifying whether the points are within the specified polygon.
+An object of the same type as \code{.data}. The output has the fallowing proprieties:
+\itemize{
+\item Added \code{out_col_name} column specifying witch latitude and longitude are outside giving municipality.
+\item Keeps the observation but turns the latitude and longitude in NA for points outside boundary.
+}
 }
 \description{
-This function checks whether the given latitude and longitude points are within the specified municipality polygon.
+This function checks whether the given latitude and longitude points are outside the specified municipality polygon.
 }
 \details{
 This function reads municipality polygon data, transforms the points to the specified CRS,
@@ -51,4 +55,9 @@ print(df)
 # |   NA   |   NA   | TRUE     |
 # | -22.77 | -46.99 | FALSE    |
 
+}
+\seealso{
+\code{\link[sf:st_as_sf]{sf::st_as_sf()}} for convert foreign object to an sf object
+\code{\link[sf:geos_binary_pred]{sf::st_within()}} for checking if points are within the municipality polygon
+\code{\link[geobr:read_municipality]{geobr::read_municipality()}} for loading municipality
 }

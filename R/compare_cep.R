@@ -1,21 +1,20 @@
 #' Compare Two ZIP Codes for Equality
 #'
-#' This function compares two ZIP codes for equality based on specific criteria.
+#' This function compares two CEPs for equality based on specific criteria.
 #'
-#' @param df A dataframe containing the columns with ZIP code information.
-#' @param col_cep1 A string indicating the column name for the first ZIP code.
-#' @param col_cep2 A string indicating the column name for the second ZIP code.
-#' @param strict_check Logical indicating whether to perform strict checking on 5-digit ZIP codes.
-#'                     If TRUE, evaluates 5-digit codes; if FALSE, evaluates only 8-digit codes.
-#'                     Default is FALSE.
-#' @return Returns a vector of 1s and 0s indicating the comparison result for each row of ZIP codes in the dataframe.
+#' @param df A data frame containing the columns with CEP information.
+#' @param col_cep1,col_cep2 Column name for the first and second CEP.
+#' @param strict_check Logical indicating whether to perform strict checking on 5-digit CEPs.
+#'                     If `TRUE`, evaluates 5-digit codes; if `FALSE`, evaluates only 8-digit codes.
+#'                     Default is `FALSE.`
+#' @return A vector of the same length whit 1s and 0s. This indicates the comparison result for each row of CEPs in the data frame.
 #'         Returns NA for rows not adhering to the criteria (e.g., not 8 or 5 digits).
 #'
 #' @details
-#' This function compares two ZIP codes for equality based on specific criteria.
-#' It checks whether the ZIP codes in two columns of a dataframe match certain patterns (8 or 5 digits).
-#' The strict_check argument allows for strict checking of 5-digit codes.
-#' If the ZIP codes adhere to the specified criteria, the function returns 1 for a match, 0 for a mismatch,
+#' This function compares two CEPs for equality based on specific criteria.
+#' It checks whether the CEP in two columns of a data frame match certain patterns (8 or 5 digits).
+#' The `strict_check` argument allows for strict checking of 5-digit codes.
+#' If the CEP adhere to the specified criteria, the function returns 1 for a match, 0 for a mismatch,
 #' and NA for values not meeting the criteria.
 #'
 #' @examples

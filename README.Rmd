@@ -1,6 +1,7 @@
 ---
 output: github_document
 ---
+<style>body {text-align: justify}</style>
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(

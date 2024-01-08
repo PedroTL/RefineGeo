@@ -15,7 +15,7 @@
 #' @param output_addr_1,output_addr_2,output_addr_3 Column with the complete returned address description for each of the three Geocoding services.
 #' @param subsector_as_zip Logical. If `TRUE`, can extracts a 5-digit subsector pattern as ZIP code when available. Default is `FALSE`.
 #' @param strict_check Logical indicating whether to perform strict checking on 5-digit ZIP codes. If `TRUE`, evaluates 5-digit codes; if `FALSE`, evaluates only 8-digit codes. Default is `FALSE`.
-#' @return An object of the same type as `.data`. The output has the fallowing proprieties:
+#' @returns An object of the same type as `.data`. The output has the fallowing proprieties:
 #'
 #' * Added distances columns between the pairwise comparison of three Geocoding services.
 #' * If specified by `short_distance = TRUE` adds a column with the name of the shortest distance between Geocoding services.

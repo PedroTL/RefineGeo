@@ -19,18 +19,21 @@ devtools::install_github("PedroTL/RefineGeo")
 
 ## Introduction
 
-There is at this moment five main functions. - `clean_address`: Cleans
-addresses string, removes punctuation, accents, double spaces and leave
-all in caps. - `extr_cep`: Extracts CEP (Equivalent of Zip Code) from a
-address string, available for 8 and 5 digits patter. - `compare_cep`:
-Check between two strings if the CEP is or not a match between the
-two. - `points_out`: Check for coordinates outside of a municipallity
-polygon boudrie. - `get_best_coords`: Calculate distance in kilometer
-between pairwise points of three Geocoding services. Explicits the two
-services with shortest distance, compare de CEP equality between CEPs
-from input address and the three outputs addresses strings. Calculates
-the Method of Double Confirmation (MDC), enabiling to rank up each
-service.
+There is at this moment five main functions.
+
+- `clean_address`: Cleans addresses string, removes punctuation,
+  accents, double spaces and leave all in caps.
+- `extr_cep`: Extracts CEP (Equivalent of Zip Code) from a address
+  string, available for 8 and 5 digits patter.
+- `compare_cep`: Check between two strings if the CEP is or not a match
+  between the two.
+- `points_out`: Check for coordinates outside of a municipallity polygon
+  boudrie.
+- `get_best_coords`: Calculate distance in kilometer between pairwise
+  points of three Geocoding services. Explicits the two services with
+  shortest distance, compare de CEP equality between CEPs from input
+  address and the three outputs addresses strings. Calculates the Method
+  of Double Confirmation (MDC), enabiling to rank up each service.
 
 ## Example
 
@@ -39,15 +42,13 @@ spaces, and other common problems with input addresses.
 
 ``` r
 library(RefineGeo)
-#> Loading required namespace: sf
-#> The legacy packages maptools, rgdal, and rgeos, underpinning the sp package,
-#> which was just loaded, will retire in October 2023.
-#> Please refer to R-spatial evolution reports for details, especially
-#> https://r-spatial.org/r/2023/05/15/evolution4.html.
-#> It may be desirable to make the sf package available;
-#> package maintainers should consider adding sf to Suggests:.
-#> The sp package is now running under evolution status 2
-#>      (status 2 uses the sf package in place of rgdal)
+library(ggplot2)
+library(sf)
+library(geobr)
+```
+
+``` r
+# Sample address
 address <- c("Rua JosÉ DôIS - -  12345678", "R. DR, JÔSÉ DÓIS  AV: 1 -- (12345)")
 clean_address(address)
 #> [1] "RUA JOSE DOIS 12345678"    "R DR JOSE DOIS AV 1 12345"
@@ -87,12 +88,15 @@ the other with the output from the Geocoding service. `extr_cep` can be
 used to remove CEP patterns from the string.
 
 ``` r
+# Sample address
 input_address <- c("RUA JOSE DOIS 12345678", "R DR JOSE DOIS AV 1 12345")
 output_address <- c("RUA JOSE DOIS 12345678", "R DR JOSE DOIS AV 1 12345")
 
 # Extracting CEP
-input_address_cep <- extr_cep(input_address)
-output_address_cep <- extr_cep(output_address, subsector_as_zip = TRUE)
+extr_cep(input_address) # Input address CEP
+#> [1] "12345678" NA
+extr_cep(output_address, subsector_as_zip = TRUE)  # Output address CEP
+#> [1] "12345678" "12345"
 ```
 
 The extr_cep can also explicitly consider 5 digits as CEP if specified
@@ -103,6 +107,7 @@ column with a binary value (1 if the CEPs are a match between 2 columns
 and 0 if not).
 
 ``` r
+# Sample data frame
 df <- data.frame(cep1 = c("12345", "12345678", "12345", "12345", "12345"),
                  cep2 = c("12345", "12345678", "54321", "123", "12345"))
 
@@ -136,13 +141,6 @@ The function uses the `read_municipality` from `geobr`, so a
 `CRS projection`.
 
 ``` r
-library(ggplot2)
-#> Warning: package 'ggplot2' was built under R version 4.3.2
-library(sf)
-#> Linking to GEOS 3.11.2, GDAL 3.6.2, PROJ 9.2.0; sf_use_s2() is TRUE
-library(geobr)
-#> Warning: package 'geobr' was built under R version 4.3.2
-
 # Sample data
 df <- data.frame(lat = c(-22.71704, -22.71258, -22.84277, -22.73391, -22.77165),
                  lon = c(-46.91200, -46.90435, -47.07650, -47.00500, -46.98793))
@@ -150,8 +148,7 @@ df <- data.frame(lat = c(-22.71704, -22.71258, -22.84277, -22.73391, -22.77165),
 # Getting the Campinas SHP.
 shp_campinas <- read_municipality(code_muni = 3509502, year = 2020) %>%
     st_transform(4326)
-#> Using year 2020
-#> Downloading: 780 B     Downloading: 780 B     Downloading: 2 kB     Downloading: 2 kB     Downloading: 2 kB     Downloading: 2 kB     Downloading: 2 kB     Downloading: 2 kB     Downloading: 18 kB     Downloading: 18 kB     Downloading: 18 kB     Downloading: 18 kB     Downloading: 34 kB     Downloading: 34 kB     Downloading: 34 kB     Downloading: 34 kB     Downloading: 34 kB     Downloading: 34 kB     Downloading: 42 kB     Downloading: 42 kB     Downloading: 59 kB     Downloading: 59 kB     Downloading: 75 kB     Downloading: 75 kB     Downloading: 91 kB     Downloading: 91 kB     Downloading: 110 kB     Downloading: 110 kB     Downloading: 120 kB     Downloading: 120 kB     Downloading: 130 kB     Downloading: 130 kB     Downloading: 140 kB     Downloading: 140 kB     Downloading: 140 kB     Downloading: 140 kB     Downloading: 150 kB     Downloading: 150 kB     Downloading: 160 kB     Downloading: 160 kB     Downloading: 170 kB     Downloading: 170 kB     Downloading: 180 kB     Downloading: 180 kB     Downloading: 200 kB     Downloading: 200 kB     Downloading: 210 kB     Downloading: 210 kB     Downloading: 230 kB     Downloading: 230 kB     Downloading: 240 kB     Downloading: 240 kB     Downloading: 240 kB     Downloading: 240 kB     Downloading: 260 kB     Downloading: 260 kB     Downloading: 280 kB     Downloading: 280 kB     Downloading: 280 kB     Downloading: 280 kB     Downloading: 280 kB     Downloading: 280 kB     Downloading: 280 kB     Downloading: 280 kB     Downloading: 290 kB     Downloading: 290 kB     Downloading: 290 kB     Downloading: 290 kB     Downloading: 310 kB     Downloading: 310 kB     Downloading: 320 kB     Downloading: 320 kB     Downloading: 320 kB     Downloading: 320 kB     Downloading: 320 kB     Downloading: 320 kB     Downloading: 330 kB     Downloading: 330 kB     Downloading: 330 kB     Downloading: 330 kB     Downloading: 350 kB     Downloading: 350 kB     Downloading: 370 kB     Downloading: 370 kB     Downloading: 380 kB     Downloading: 380 kB     Downloading: 380 kB     Downloading: 380 kB     Downloading: 380 kB     Downloading: 380 kB     Downloading: 400 kB     Downloading: 400 kB     Downloading: 410 kB     Downloading: 410 kB     Downloading: 420 kB     Downloading: 420 kB     Downloading: 420 kB     Downloading: 420 kB     Downloading: 430 kB     Downloading: 430 kB     Downloading: 440 kB     Downloading: 440 kB     Downloading: 460 kB     Downloading: 460 kB     Downloading: 460 kB     Downloading: 460 kB     Downloading: 460 kB     Downloading: 460 kB     Downloading: 460 kB     Downloading: 460 kB     Downloading: 480 kB     Downloading: 480 kB     Downloading: 500 kB     Downloading: 500 kB     Downloading: 510 kB     Downloading: 510 kB     Downloading: 530 kB     Downloading: 530 kB     Downloading: 540 kB     Downloading: 540 kB     Downloading: 560 kB     Downloading: 560 kB     Downloading: 580 kB     Downloading: 580 kB     Downloading: 590 kB     Downloading: 590 kB     Downloading: 610 kB     Downloading: 610 kB     Downloading: 630 kB     Downloading: 630 kB     Downloading: 640 kB     Downloading: 640 kB     Downloading: 660 kB     Downloading: 660 kB     Downloading: 670 kB     Downloading: 670 kB     Downloading: 690 kB     Downloading: 690 kB     Downloading: 710 kB     Downloading: 710 kB     Downloading: 720 kB     Downloading: 720 kB     Downloading: 740 kB     Downloading: 740 kB     Downloading: 750 kB     Downloading: 750 kB     Downloading: 770 kB     Downloading: 770 kB     Downloading: 790 kB     Downloading: 790 kB     Downloading: 790 kB     Downloading: 790 kB     Downloading: 800 kB     Downloading: 800 kB     Downloading: 810 kB     Downloading: 810 kB     Downloading: 830 kB     Downloading: 830 kB     Downloading: 830 kB     Downloading: 830 kB     Downloading: 840 kB     Downloading: 840 kB     Downloading: 840 kB     Downloading: 840 kB     Downloading: 840 kB     Downloading: 840 kB     Downloading: 860 kB     Downloading: 860 kB     Downloading: 880 kB     Downloading: 880 kB     Downloading: 880 kB     Downloading: 880 kB     Downloading: 880 kB     Downloading: 880 kB     Downloading: 880 kB     Downloading: 880 kB     Downloading: 880 kB     Downloading: 880 kB     Downloading: 900 kB     Downloading: 900 kB     Downloading: 920 kB     Downloading: 920 kB     Downloading: 920 kB     Downloading: 920 kB     Downloading: 920 kB     Downloading: 920 kB     Downloading: 930 kB     Downloading: 930 kB     Downloading: 950 kB     Downloading: 950 kB     Downloading: 950 kB     Downloading: 950 kB     Downloading: 970 kB     Downloading: 970 kB     Downloading: 980 kB     Downloading: 980 kB     Downloading: 990 kB     Downloading: 990 kB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB
+#> Downloading: 1.6 kB     Downloading: 1.6 kB     Downloading: 1.8 kB     Downloading: 1.8 kB     Downloading: 1.8 kB     Downloading: 1.8 kB     Downloading: 1.8 kB     Downloading: 1.8 kB     Downloading: 42 kB     Downloading: 42 kB     Downloading: 75 kB     Downloading: 75 kB     Downloading: 120 kB     Downloading: 120 kB     Downloading: 160 kB     Downloading: 160 kB     Downloading: 190 kB     Downloading: 190 kB     Downloading: 210 kB     Downloading: 210 kB     Downloading: 260 kB     Downloading: 260 kB     Downloading: 300 kB     Downloading: 300 kB     Downloading: 300 kB     Downloading: 300 kB     Downloading: 300 kB     Downloading: 300 kB     Downloading: 310 kB     Downloading: 310 kB     Downloading: 610 kB     Downloading: 610 kB     Downloading: 620 kB     Downloading: 620 kB     Downloading: 620 kB     Downloading: 620 kB     Downloading: 620 kB     Downloading: 620 kB     Downloading: 620 kB     Downloading: 620 kB     Downloading: 670 kB     Downloading: 670 kB     Downloading: 680 kB     Downloading: 680 kB     Downloading: 800 kB     Downloading: 800 kB     Downloading: 830 kB     Downloading: 830 kB     Downloading: 880 kB     Downloading: 880 kB     Downloading: 880 kB     Downloading: 880 kB     Downloading: 940 kB     Downloading: 940 kB     Downloading: 970 kB     Downloading: 970 kB     Downloading: 970 kB     Downloading: 970 kB     Downloading: 1,000 kB     Downloading: 1,000 kB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB
 
 # Transforming Latitude and Longitude in a geometry column
 df_sf_point <- st_as_sf(df,
@@ -178,15 +175,16 @@ to find out what the outside points are, the function could help us.
 ``` r
 # Finding if the coordinates are inside or not the polygon
 df <- points_out(df, "lat", "lon", "out_camp", code_muni = 3509502, year = 2020, polygon_crs = 4326)
-#> Using year 2020
-head(df)
-#>         lat       lon out_camp
-#> 1        NA        NA     TRUE
-#> 2        NA        NA     TRUE
-#> 3 -22.84277 -47.07650    FALSE
-#> 4        NA        NA     TRUE
-#> 5 -22.77165 -46.98793    FALSE
+knitr::kable(head(df), align = "c") 
 ```
+
+|    lat    |    lon    | out_camp |
+|:---------:|:---------:|:--------:|
+|    NA     |    NA     |   TRUE   |
+|    NA     |    NA     |   TRUE   |
+| -22.84277 | -47.07650 |  FALSE   |
+|    NA     |    NA     |   TRUE   |
+| -22.77165 | -46.98793 |  FALSE   |
 
 There we go. Three points are found outside Campinas-SP, this could be
 helpful when trying to be more accurate in the analysis.
@@ -196,6 +194,7 @@ coordinates between the three Geocoding services. The ideal structure of
 a data frame for these functions is as follows:
 
 ``` r
+# Sample data frame
 df <- data.frame(
   input_addr = c("Rua X 12345-123", "Rua Y 54321-321", "Rua Y 99999", "Rua Z 11111-888", "Rua Z 22211-888", "Rua Z 11111-832", "Rua Z 11111-328"),
   output_addr_1 = c("Rua X 12345-123", "Rua Y 52321-321", "Rua Y 39999", "Rua Z 11111-888", NA, NA, NA),
@@ -209,22 +208,17 @@ df <- data.frame(
   lon3 = c(-46.92430, -46.90435, NA, NA, NA, -46.92439, NA)
  )
 
-head(df)
-#>        input_addr   output_addr_1    output_addr_2   output_addr_3      lat1
-#> 1 Rua X 12345-123 Rua X 12345-123  Rua X 12345-113 Rua X 12345-123 -22.71704
-#> 2 Rua Y 54321-321 Rua Y 52321-321 Rua YY 54321-321 Rua Y 54321-321 -22.71258
-#> 3     Rua Y 99999     Rua Y 39999        Rua 99999    Rua YY 19999 -22.77704
-#> 4 Rua Z 11111-888 Rua Z 11111-888      Rua G 11111     Rua K 11111 -22.74704
-#> 5 Rua Z 22211-888            <NA>             <NA>            <NA>        NA
-#> 6 Rua Z 11111-832            <NA>             <NA>            <NA>        NA
-#>        lon1      lat2      lon2      lat3      lon3
-#> 1 -46.91200 -22.72704 -46.93200 -22.75704 -46.92430
-#> 2 -46.90435 -22.71268 -46.90435 -22.71258 -46.90435
-#> 3 -46.97200 -22.72304 -46.99200        NA        NA
-#> 4 -46.91200        NA        NA        NA        NA
-#> 5        NA -22.72704 -46.92435        NA        NA
-#> 6        NA        NA        NA -22.77704 -46.92439
+knitr::kable(head(df), align = "c") 
 ```
+
+|   input_addr    |  output_addr_1  |  output_addr_2   |  output_addr_3  |   lat1    |   lon1    |   lat2    |   lon2    |   lat3    |   lon3    |
+|:---------------:|:---------------:|:----------------:|:---------------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
+| Rua X 12345-123 | Rua X 12345-123 | Rua X 12345-113  | Rua X 12345-123 | -22.71704 | -46.91200 | -22.72704 | -46.93200 | -22.75704 | -46.92430 |
+| Rua Y 54321-321 | Rua Y 52321-321 | Rua YY 54321-321 | Rua Y 54321-321 | -22.71258 | -46.90435 | -22.71268 | -46.90435 | -22.71258 | -46.90435 |
+|   Rua Y 99999   |   Rua Y 39999   |    Rua 99999     |  Rua YY 19999   | -22.77704 | -46.97200 | -22.72304 | -46.99200 |    NA     |    NA     |
+| Rua Z 11111-888 | Rua Z 11111-888 |   Rua G 11111    |   Rua K 11111   | -22.74704 | -46.91200 |    NA     |    NA     |    NA     |    NA     |
+| Rua Z 22211-888 |       NA        |        NA        |       NA        |    NA     |    NA     | -22.72704 | -46.92435 |    NA     |    NA     |
+| Rua Z 11111-832 |       NA        |        NA        |       NA        |    NA     |    NA     |    NA     |    NA     | -22.77704 | -46.92439 |
 
 To get the coordinates for three distinct services the `tidygeocoder`
 package could be of help. The `combine_geocode` accepts a list of
@@ -276,38 +270,30 @@ result <- get_best_coords(df, "lat1", "lon1", "lat2", "lon2", "lat3", "lon3", "d
                           short_distance = TRUE, 
                           mdc = TRUE, 
                           summarize_mdc = TRUE)
-
-df <- result$original_data
-head(df)
-#>        input_addr   output_addr_1    output_addr_2   output_addr_3      lat1
-#> 1 Rua X 12345-123 Rua X 12345-123  Rua X 12345-113 Rua X 12345-123 -22.71704
-#> 2 Rua Y 54321-321 Rua Y 52321-321 Rua YY 54321-321 Rua Y 54321-321 -22.71258
-#> 3     Rua Y 99999     Rua Y 39999        Rua 99999    Rua YY 19999 -22.77704
-#> 4 Rua Z 11111-888 Rua Z 11111-888      Rua G 11111     Rua K 11111 -22.74704
-#> 5 Rua Z 22211-888            <NA>             <NA>            <NA>        NA
-#> 6 Rua Z 11111-832            <NA>             <NA>            <NA>        NA
-#>        lon1      lat2      lon2      lat3      lon3    dis_1_2  dis_1_3
-#> 1 -46.91200 -22.72704 -46.93200 -22.75704 -46.92430 2.33590897 4.628388
-#> 2 -46.90435 -22.71268 -46.90435 -22.71258 -46.90435 0.01113195 0.000000
-#> 3 -46.97200 -22.72304 -46.99200        NA        NA 6.35221986       NA
-#> 4 -46.91200        NA        NA        NA        NA         NA       NA
-#> 5        NA -22.72704 -46.92435        NA        NA         NA       NA
-#> 6        NA        NA        NA -22.77704 -46.92439         NA       NA
-#>      dis_2_3  shortest_distance dis_1 dis_2 dis_3
-#> 1 3.43187235            dis_1_2     1     1     0
-#> 2 0.01113195            dis_1_3     1     0     1
-#> 3         NA            dis_1_2     1     1     0
-#> 4         NA just lat1 and lon1     0     0     0
-#> 5         NA just lat2 and lon2     0     0     0
-#> 6         NA just lat3 and lon3     0     0     0
 ```
 
 ``` r
 mdc_summary <- result$mdc_summary
-head(mdc_summary)
-#>   API_dis_NAME1 API_dis_NAME2 API_dis_NAME3
-#> 1             3             2             1
+knitr::kable(head(mdc_summary), align = "c") 
 ```
+
+| API_dis_NAME1 | API_dis_NAME2 | API_dis_NAME3 |
+|:-------------:|:-------------:|:-------------:|
+|       3       |       2       |       1       |
+
+``` r
+df <- result$original_data
+knitr::kable(head(df), align = "c") 
+```
+
+|   input_addr    |  output_addr_1  |  output_addr_2   |  output_addr_3  |   lat1    |   lon1    |   lat2    |   lon2    |   lat3    |   lon3    |  dis_1_2  | dis_1_3  |  dis_2_3  | shortest_distance  | dis_1 | dis_2 | dis_3 |
+|:---------------:|:---------------:|:----------------:|:---------------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:--------:|:---------:|:------------------:|:-----:|:-----:|:-----:|
+| Rua X 12345-123 | Rua X 12345-123 | Rua X 12345-113  | Rua X 12345-123 | -22.71704 | -46.91200 | -22.72704 | -46.93200 | -22.75704 | -46.92430 | 2.3359090 | 4.628388 | 3.4318723 |      dis_1_2       |   1   |   1   |   0   |
+| Rua Y 54321-321 | Rua Y 52321-321 | Rua YY 54321-321 | Rua Y 54321-321 | -22.71258 | -46.90435 | -22.71268 | -46.90435 | -22.71258 | -46.90435 | 0.0111319 | 0.000000 | 0.0111319 |      dis_1_3       |   1   |   0   |   1   |
+|   Rua Y 99999   |   Rua Y 39999   |    Rua 99999     |  Rua YY 19999   | -22.77704 | -46.97200 | -22.72304 | -46.99200 |    NA     |    NA     | 6.3522199 |    NA    |    NA     |      dis_1_2       |   1   |   1   |   0   |
+| Rua Z 11111-888 | Rua Z 11111-888 |   Rua G 11111    |   Rua K 11111   | -22.74704 | -46.91200 |    NA     |    NA     |    NA     |    NA     |    NA     |    NA    |    NA     | just lat1 and lon1 |   0   |   0   |   0   |
+| Rua Z 22211-888 |       NA        |        NA        |       NA        |    NA     |    NA     | -22.72704 | -46.92435 |    NA     |    NA     |    NA     |    NA    |    NA     | just lat2 and lon2 |   0   |   0   |   0   |
+| Rua Z 11111-832 |       NA        |        NA        |       NA        |    NA     |    NA     |    NA     |    NA     | -22.77704 | -46.92439 |    NA     |    NA    |    NA     | just lat3 and lon3 |   0   |   0   |   0   |
 
 The second part of the function is about picking the final coordinate
 based on the measures of quality. The first is the confirmation of the
@@ -348,52 +334,21 @@ result <- get_best_coords(df, "lat1", "lon1", "lat2", "lon2", "lat3", "lon3", "d
                            output_addr_1 = "output_addr_1",
                            output_addr_2 = "output_addr_2",
                            output_addr_3 = "output_addr_3")
-
-df <- result$original_data
-head(df)
-#>        input_addr   output_addr_1    output_addr_2   output_addr_3      lat1
-#> 1 Rua X 12345-123 Rua X 12345-123  Rua X 12345-113 Rua X 12345-123 -22.71704
-#> 2 Rua Y 54321-321 Rua Y 52321-321 Rua YY 54321-321 Rua Y 54321-321 -22.71258
-#> 3     Rua Y 99999     Rua Y 39999        Rua 99999    Rua YY 19999 -22.77704
-#> 4 Rua Z 11111-888 Rua Z 11111-888      Rua G 11111     Rua K 11111 -22.74704
-#> 5 Rua Z 22211-888            <NA>             <NA>            <NA>        NA
-#> 6 Rua Z 11111-832            <NA>             <NA>            <NA>        NA
-#>        lon1      lat2      lon2      lat3      lon3    dis_1_2  dis_1_3
-#> 1 -46.91200 -22.72704 -46.93200 -22.75704 -46.92430 2.33590897 4.628388
-#> 2 -46.90435 -22.71268 -46.90435 -22.71258 -46.90435 0.01113195 0.000000
-#> 3 -46.97200 -22.72304 -46.99200        NA        NA 6.35221986       NA
-#> 4 -46.91200        NA        NA        NA        NA         NA       NA
-#> 5        NA -22.72704 -46.92435        NA        NA         NA       NA
-#> 6        NA        NA        NA -22.77704 -46.92439         NA       NA
-#>      dis_2_3  shortest_distance dis_1 dis_2 dis_3 input_addr_cep
-#> 1 3.43187235            dis_1_2     1     1     0       12345123
-#> 2 0.01113195            dis_1_3     1     0     1       54321321
-#> 3         NA            dis_1_2     1     1     0          99999
-#> 4         NA just lat1 and lon1     0     0     0       11111888
-#> 5         NA just lat2 and lon2     0     0     0       22211888
-#> 6         NA just lat3 and lon3     0     0     0       11111832
-#>   output_addr_cep_1 output_addr_cep_2 output_addr_cep_3
-#> 1          12345123          12345113          12345123
-#> 2          52321321          54321321          54321321
-#> 3             39999             99999             19999
-#> 4          11111888             11111             11111
-#> 5              <NA>              <NA>              <NA>
-#> 6              <NA>              <NA>              <NA>
-#>   comparison_cep_input_output_1 comparison_cep_input_output_2
-#> 1                             1                             0
-#> 2                             0                             1
-#> 3                             0                             1
-#> 4                             1                            NA
-#> 5                            NA                            NA
-#> 6                            NA                            NA
-#>   comparison_cep_input_output_3
-#> 1                             1
-#> 2                             1
-#> 3                             0
-#> 4                            NA
-#> 5                            NA
-#> 6                            NA
 ```
+
+``` r
+df <- result$original_data
+knitr::kable(head(df), align = "c") 
+```
+
+|   input_addr    |  output_addr_1  |  output_addr_2   |  output_addr_3  |   lat1    |   lon1    |   lat2    |   lon2    |   lat3    |   lon3    |  dis_1_2  | dis_1_3  |  dis_2_3  | shortest_distance  | dis_1 | dis_2 | dis_3 | input_addr_cep | output_addr_cep_1 | output_addr_cep_2 | output_addr_cep_3 | comparison_cep_input_output_1 | comparison_cep_input_output_2 | comparison_cep_input_output_3 |
+|:---------------:|:---------------:|:----------------:|:---------------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:--------:|:---------:|:------------------:|:-----:|:-----:|:-----:|:--------------:|:-----------------:|:-----------------:|:-----------------:|:-----------------------------:|:-----------------------------:|:-----------------------------:|
+| Rua X 12345-123 | Rua X 12345-123 | Rua X 12345-113  | Rua X 12345-123 | -22.71704 | -46.91200 | -22.72704 | -46.93200 | -22.75704 | -46.92430 | 2.3359090 | 4.628388 | 3.4318723 |      dis_1_2       |   1   |   1   |   0   |    12345123    |     12345123      |     12345113      |     12345123      |               1               |               0               |               1               |
+| Rua Y 54321-321 | Rua Y 52321-321 | Rua YY 54321-321 | Rua Y 54321-321 | -22.71258 | -46.90435 | -22.71268 | -46.90435 | -22.71258 | -46.90435 | 0.0111319 | 0.000000 | 0.0111319 |      dis_1_3       |   1   |   0   |   1   |    54321321    |     52321321      |     54321321      |     54321321      |               0               |               1               |               1               |
+|   Rua Y 99999   |   Rua Y 39999   |    Rua 99999     |  Rua YY 19999   | -22.77704 | -46.97200 | -22.72304 | -46.99200 |    NA     |    NA     | 6.3522199 |    NA    |    NA     |      dis_1_2       |   1   |   1   |   0   |     99999      |       39999       |       99999       |       19999       |               0               |               1               |               0               |
+| Rua Z 11111-888 | Rua Z 11111-888 |   Rua G 11111    |   Rua K 11111   | -22.74704 | -46.91200 |    NA     |    NA     |    NA     |    NA     |    NA     |    NA    |    NA     | just lat1 and lon1 |   0   |   0   |   0   |    11111888    |     11111888      |       11111       |       11111       |               1               |              NA               |              NA               |
+| Rua Z 22211-888 |       NA        |        NA        |       NA        |    NA     |    NA     | -22.72704 | -46.92435 |    NA     |    NA     |    NA     |    NA    |    NA     | just lat2 and lon2 |   0   |   0   |   0   |    22211888    |        NA         |        NA         |        NA         |              NA               |              NA               |              NA               |
+| Rua Z 11111-832 |       NA        |        NA        |       NA        |    NA     |    NA     |    NA     |    NA     | -22.77704 | -46.92439 |    NA     |    NA    |    NA     | just lat3 and lon3 |   0   |   0   |   0   |    11111832    |        NA         |        NA         |        NA         |              NA               |              NA               |              NA               |
 
 Finally, the selection of the final coordinate for an address can be
 done…

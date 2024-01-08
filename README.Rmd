@@ -27,6 +27,7 @@ devtools::install_github("PedroTL/RefineGeo")
 ## Introduction
 
 There is at this moment five main functions.
+
 - `clean_address`: Cleans addresses string, removes punctuation, accents, double spaces and leave all in caps.
 - `extr_cep`: Extracts CEP (Equivalent of Zip Code) from a address string, available for 8 and 5 digits patter.
 - `compare_cep`: Check between two strings if the CEP is or not a match between the two.
@@ -37,8 +38,15 @@ There is at this moment five main functions.
 
 Let's say that you have a string address that has pronunciations, double spaces, and other common problems with input addresses.
 
-```{r example_clean_address}
+```{r, loading_packages, warning = FALSE, message = FALSE}
 library(RefineGeo)
+library(ggplot2)
+library(sf)
+library(geobr)
+```
+
+```{r example_clean_address, warning = FALSE, message = FALSE}
+# Sample address
 address <- c("Rua JosÉ DôIS - -  12345678", "R. DR, JÔSÉ DÓIS  AV: 1 -- (12345)")
 clean_address(address)
 ```
@@ -62,20 +70,22 @@ When trying to compare the coordinates between services, the individual metrics 
 
 Let's assume that we have two strings, one with the input address and the other with the output from the Geocoding service. `extr_cep` can be used to remove CEP patterns from the string.
 
-```{r example_extr_cep}
+```{r example_extr_cep, warning = FALSE, message = FALSE}
+# Sample address
 input_address <- c("RUA JOSE DOIS 12345678", "R DR JOSE DOIS AV 1 12345")
 output_address <- c("RUA JOSE DOIS 12345678", "R DR JOSE DOIS AV 1 12345")
 
 # Extracting CEP
-input_address_cep <- extr_cep(input_address)
-output_address_cep <- extr_cep(output_address, subsector_as_zip = TRUE)
+extr_cep(input_address) # Input address CEP
+extr_cep(output_address, subsector_as_zip = TRUE)  # Output address CEP
 ```
 
 The extr_cep can also explicitly consider 5 digits as CEP if specified in the `subsector_as_zip`, otherwise, it will just return NA.
 
 The `compare_cep` function works in a data frame structure and returns a column with a binary value (1 if the CEPs are a match between 2 columns and 0 if not).
 
-```{r example_compare_cep}
+```{r example_compare_cep, warning = FALSE, message = FALSE}
+# Sample data frame
 df <- data.frame(cep1 = c("12345", "12345678", "12345", "12345", "12345"),
                  cep2 = c("12345", "12345678", "54321", "123", "12345"))
 
@@ -92,11 +102,7 @@ For instance, this example takes a couple of latitudes and longitudes from the C
 
 The function uses the `read_municipality` from `geobr`, so a `municipality code` must be provided, as well as the `year` and a `CRS projection`.
 
-```{r example_points_out1}
-library(ggplot2)
-library(sf)
-library(geobr)
-
+```{r example_points_out1, warning = FALSE, message = FALSE}
 # Sample data
 df <- data.frame(lat = c(-22.71704, -22.71258, -22.84277, -22.73391, -22.77165),
                  lon = c(-46.91200, -46.90435, -47.07650, -47.00500, -46.98793))
@@ -124,17 +130,18 @@ ggplot() +
 
 We can see the problem; some of the points are outside Campinas-SP, so to find out what the outside points are, the function could help us.
 
-```{r example_points_out2}
+```{r example_points_out2, warning = FALSE, message = FALSE}
 # Finding if the coordinates are inside or not the polygon
 df <- points_out(df, "lat", "lon", "out_camp", code_muni = 3509502, year = 2020, polygon_crs = 4326)
-head(df)
+knitr::kable(head(df), align = "c") 
 ```
 
 There we go. Three points are found outside Campinas-SP, this could be helpful when trying to be more accurate in the analysis.
 
 Finally, we can use the `get_best_coords`. The goal is to find the best coordinates between the three Geocoding services. The ideal structure of a data frame for these functions is as follows:
 
-```{r, example_get_best_coords1}
+```{r, example_get_best_coords1, warning = FALSE, message = FALSE}
+# Sample data frame
 df <- data.frame(
   input_addr = c("Rua X 12345-123", "Rua Y 54321-321", "Rua Y 99999", "Rua Z 11111-888", "Rua Z 22211-888", "Rua Z 11111-832", "Rua Z 11111-328"),
   output_addr_1 = c("Rua X 12345-123", "Rua Y 52321-321", "Rua Y 39999", "Rua Z 11111-888", NA, NA, NA),
@@ -148,7 +155,7 @@ df <- data.frame(
   lon3 = c(-46.92430, -46.90435, NA, NA, NA, -46.92439, NA)
  )
 
-head(df)
+knitr::kable(head(df), align = "c") 
 ```
 
 To get the coordinates for three distinct services the `tidygeocoder` package could be of help. The `combine_geocode` accepts a list of arguments that can provide an input address and receive for three services the coordinates for each address alongside the output address found by each service. Pending on the Geocoding service, an API key must be provided, and fees must be paid.
@@ -163,19 +170,21 @@ The `short_distance` is needed to calculate the `mdc`. The idea is to look to se
 
 The `summarize_mdc` is available when `mdc` is done. It counts by Geocoding service how many points were given in the `mdc`, enabling a rank of quality. Higher values show that a given service has a higher value of matching in coordinates with other services. This is used as a tiebreaker in the final selection of coordinates for an address. When `summarize_mdc` is `TRUE` the return is a list with the original data frame with appended columns and a summarized data frame with the frequencies from `mdc`.
 
-```{r, example_get_best_coords2}
+```{r, example_get_best_coords2, warning = FALSE, message = FALSE}
 result <- get_best_coords(df, "lat1", "lon1", "lat2", "lon2", "lat3", "lon3", "dis",
                           short_distance = TRUE, 
                           mdc = TRUE, 
                           summarize_mdc = TRUE)
-
-df <- result$original_data
-head(df)
 ```
 
-```{r, example_get_best_coords3}
+```{r, example_get_best_coords3, warning = FALSE, message = FALSE}
 mdc_summary <- result$mdc_summary
-head(mdc_summary)
+knitr::kable(head(mdc_summary), align = "c") 
+```
+
+```{r, example_get_best_coords4, warning = FALSE, message = FALSE}
+df <- result$original_data
+knitr::kable(head(df), align = "c") 
 ```
 
 The second part of the function is about picking the final coordinate based on the measures of quality. The first is the confirmation of the CEP, if the input address with the CEP has the same CEP as the output, it indicates a higher level of quality, and it is the first filter when picking a final coordinate.
@@ -184,7 +193,7 @@ The `cep_confirmation` uses `extr_cep` under the hood for the provided columns w
 
 The `cep_comparison` uses `compare_cep` under the hood and demands the `cep_confirmation = TRUE` alongside all the address columns. This compares the result of the input address found in the `cep_confirmation` that extracts the CEP pattern with the other addresses exctracted from CEPs. It creates three new columns to check if the input CEP is equal to the output CEP for each of the three services. The `strict_check` can be set to `TRUE` to evaluate equality between CEPs with five digits. It is recommended that if the `subsector_as_zip` is `TRUE` the `strict_check` should be too.
 
-```{r}
+```{r, example_get_best_coords5, warning = FALSE, message = FALSE}
 result <- get_best_coords(df, "lat1", "lon1", "lat2", "lon2", "lat3", "lon3", "dis",
                            short_distance = TRUE, 
                            mdc = TRUE, 
@@ -197,9 +206,11 @@ result <- get_best_coords(df, "lat1", "lon1", "lat2", "lon2", "lat3", "lon3", "d
                            output_addr_1 = "output_addr_1",
                            output_addr_2 = "output_addr_2",
                            output_addr_3 = "output_addr_3")
+```
 
+```{r, example_get_best_coords6, warning = FALSE, message = FALSE}
 df <- result$original_data
-head(df)
+knitr::kable(head(df), align = "c") 
 ```
 
 Finally, the selection of the final coordinate for an address can be done...

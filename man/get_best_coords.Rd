@@ -23,7 +23,8 @@ get_best_coords(
   output_addr_3 = NULL,
   subsector_as_zip = FALSE,
   cep_comparison = FALSE,
-  strict_check = FALSE
+  strict_check = FALSE,
+  final_coordinate = FALSE
 )
 }
 \arguments{
@@ -50,6 +51,8 @@ get_best_coords(
 \item{cep_comparison}{Logical Value. If \code{TRUE}, the columns with the \code{input_addr}, \code{output_addr_1}, \code{output_addr_2}, \code{output_addr_3} must be provided, it also demands that \code{cep_confirmation = TRUE}. Uses the compare_cep to compare the CEP from the input_addr with the three outputs CEPs. The \code{strict_check} can be set to \code{TRUE} to evaluate the five digits CEPs, if \code{subsector_as_zip = TRUE} is recommended that \code{strict_check = TRUE.} Default is \code{FALSE}.}
 
 \item{strict_check}{Logical indicating whether to perform strict checking on 5-digit ZIP codes. If \code{TRUE}, evaluates 5-digit codes; if \code{FALSE}, evaluates only 8-digit codes. Default is \code{FALSE}.}
+
+\item{final_coordinate}{Logical Value. If \code{TRUE} appends two columns of final latitude and longitude provided the MDC methodology. Default is \code{FALSE}.}
 }
 \value{
 An object of the same type as \code{.data}. The output has the fallowing proprieties:
@@ -60,6 +63,7 @@ An object of the same type as \code{.data}. The output has the fallowing proprie
 \item If specified by \code{cep_comparison} adds three columns, comparing if the CEP found in the \code{input_addr} is the same as the ones found in the \code{output_addr_1}, \code{output_addr_2}, \code{output_addr_3}.
 \item If specified by \code{mdc = TRUE} adds three columns, assigning one 'score point' for each Geocoding service when they confirmed each other by means of the coordinate being the shortest between the three.
 \item If specified by \code{summarize_mdc} returns a list whit the original data frame whit the appended columns and a summarized mdc counting each confirmation point by the \code{mdc} for each of the three Geocoding services.
+\item If specified by \code{final_coordinate} return in the original data frame with two new appended columns with final coordinates selected by the MDC method. \code{summarize_mdc} must be \code{TRUE} to get final coordinates by \code{final_coordinate = TRUE}.
 }
 }
 \description{

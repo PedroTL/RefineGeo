@@ -15,6 +15,7 @@
 #' @param output_addr_1,output_addr_2,output_addr_3 Column with the complete returned address description for each of the three Geocoding services.
 #' @param subsector_as_zip Logical. If `TRUE`, can extracts a 5-digit subsector pattern as ZIP code when available. Default is `FALSE`.
 #' @param strict_check Logical indicating whether to perform strict checking on 5-digit ZIP codes. If `TRUE`, evaluates 5-digit codes; if `FALSE`, evaluates only 8-digit codes. Default is `FALSE`.
+#' @param final_coordinate Logical Value. If `TRUE` appends two columns of final latitude and longitude provided the MDC methodology. Default is `FALSE`.
 #' @returns An object of the same type as `.data`. The output has the fallowing proprieties:
 #'
 #' * Added distances columns between the pairwise comparison of three Geocoding services.
@@ -23,6 +24,7 @@
 #' * If specified by `cep_comparison` adds three columns, comparing if the CEP found in the `input_addr` is the same as the ones found in the `output_addr_1`, `output_addr_2`, `output_addr_3`.
 #' * If specified by `mdc = TRUE` adds three columns, assigning one 'score point' for each Geocoding service when they confirmed each other by means of the coordinate being the shortest between the three.
 #' * If specified by `summarize_mdc` returns a list whit the original data frame whit the appended columns and a summarized mdc counting each confirmation point by the `mdc` for each of the three Geocoding services.
+#' * If specified by `final_coordinate` return in the original data frame with two new appended columns with final coordinates selected by the MDC method. `summarize_mdc` must be `TRUE` to get final coordinates by `final_coordinate = TRUE`.
 #'
 #' @seealso
 #'    [clean_address()] for convenient address cleaning
@@ -86,7 +88,8 @@ get_best_coords <- function(df, lat_col1, lon_col1, lat_col2, lon_col2, lat_col3
                             dist_prefix, short_distance = FALSE, mdc = FALSE, summarize_mdc = FALSE,
                             cep_confirmation = FALSE, input_addr = NULL, output_addr_1 = NULL,
                             output_addr_2 = NULL, output_addr_3 = NULL, subsector_as_zip = FALSE,
-                            cep_comparison = FALSE, strict_check = FALSE) {
+                            cep_comparison = FALSE, strict_check = FALSE, final_coordinate = FALSE) {
+
   cols <- list(
     c(lat_col1, lon_col1, lat_col2, lon_col2, paste0(dist_prefix, "_1_2")),
     c(lat_col1, lon_col1, lat_col3, lon_col3, paste0(dist_prefix, "_1_3")),
@@ -103,21 +106,19 @@ get_best_coords <- function(df, lat_col1, lon_col1, lat_col2, lon_col2, lat_col3
   }
 
   if (short_distance) {
-    df$shortest_distance <- as.character(apply(df[, c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3"))], 1, function(x) names(df[, c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3"))])[which.min(x)]))
+    df$shortest_distance <- apply(df[, c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3"))], 1, function(x) names(df[, c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3"))])[which.min(x)])
 
     `%!in%` <- function(x, table) {
       !x %in% table
     }
 
-    df$shortest_distance <-
-      case_when(
-        !df$shortest_distance %in% c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3")) & is.na(df[[lat_col1]]) & is.na(df[[lat_col2]]) & is.na(df[[lat_col3]]) ~ "No Coordinates",
-        !df$shortest_distance %in% c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3")) & is.na(df[[lat_col1]]) & is.na(df[[lat_col2]]) & !is.na(df[[lat_col3]]) ~ paste("just", names(df[lat_col3]), "and", names(df[lon_col3]), sep = " "),
-        !df$shortest_distance %in% c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3")) & is.na(df[[lat_col1]]) & !is.na(df[[lat_col2]]) & is.na(df[[lat_col3]]) ~ paste("just", names(df[lat_col2]), "and", names(df[lon_col2]), sep = " "),
-        !df$shortest_distance %in% c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3")) & !is.na(df[[lat_col1]]) & is.na(df[[lat_col2]]) & is.na(df[[lat_col3]]) ~ paste("just", names(df[lat_col1]), "and", names(df[lon_col1]), sep = " "),
-        TRUE ~ as.character(df$shortest_distance)
-      )
-
+    df$shortest_distance <- case_when(
+      !df$shortest_distance %in% c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3")) & is.na(df[[lat_col1]]) & is.na(df[[lat_col2]]) & is.na(df[[lat_col3]]) ~ "No Coordinates",
+      !df$shortest_distance %in% c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3")) & is.na(df[[lat_col1]]) & is.na(df[[lat_col2]]) & !is.na(df[[lat_col3]]) ~ paste("just", names(df[lat_col3]), "and", names(df[lon_col3]), sep = " "),
+      !df$shortest_distance %in% c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3")) & is.na(df[[lat_col1]]) & !is.na(df[[lat_col2]]) & is.na(df[[lat_col3]]) ~ paste("just", names(df[lat_col2]), "and", names(df[lon_col2]), sep = " "),
+      !df$shortest_distance %in% c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3")) & !is.na(df[[lat_col1]]) & is.na(df[[lat_col2]]) & is.na(df[[lat_col3]]) ~ paste("just", names(df[lat_col1]), "and", names(df[lon_col1]), sep = " "),
+      TRUE ~ as.character(df$shortest_distance)
+    )
   }
 
   if (mdc) {
@@ -126,21 +127,14 @@ get_best_coords <- function(df, lat_col1, lon_col1, lat_col2, lon_col2, lat_col3
     API_NAME2 <- paste0(prefix, "_2")
     API_NAME3 <- paste0(prefix, "_3")
 
-    df[[API_NAME1]] <- as.integer(
-      df$shortest_distance %in% c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3"))
-    )
-    df[[API_NAME2]] <- as.integer(
-      df$shortest_distance %in% c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_2_3"))
-    )
-    df[[API_NAME3]] <- as.integer(
-      df$shortest_distance %in% c(paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3"))
-    )
+    df[[API_NAME1]] <- as.integer(df$shortest_distance %in% c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_1_3")))
+    df[[API_NAME2]] <- as.integer(df$shortest_distance %in% c(paste0(dist_prefix, "_1_2"), paste0(dist_prefix, "_2_3")))
+    df[[API_NAME3]] <- as.integer(df$shortest_distance %in% c(paste0(dist_prefix, "_1_3"), paste0(dist_prefix, "_2_3")))
   }
 
   if (cep_confirmation) {
     if (!is.null(input_addr) && !is.null(output_addr_1) && !is.null(output_addr_2) && !is.null(output_addr_3)) {
       df$input_addr_cep <- extr_cep(df[[input_addr]], subsector_as_zip = subsector_as_zip)
-
       df$output_addr_cep_1 <- extr_cep(df[[output_addr_1]], subsector_as_zip = subsector_as_zip)
       df$output_addr_cep_2 <- extr_cep(df[[output_addr_2]], subsector_as_zip = subsector_as_zip)
       df$output_addr_cep_3 <- extr_cep(df[[output_addr_3]], subsector_as_zip = subsector_as_zip)
@@ -168,14 +162,204 @@ get_best_coords <- function(df, lat_col1, lon_col1, lat_col2, lon_col2, lat_col3
       )
 
       colnames(mdc_summary) <- gsub("^API_", "API_dis_", colnames(mdc_summary)) # Update column names
-
       result <- list(original_data = df, mdc_summary = mdc_summary)
-      return(result)
+      if (!final_coordinate) {
+        return(result)
+      }
     } else {
       stop("MDC argument must be TRUE to compute the MDC summary.")
     }
   }
 
-  return(df)
+  if (final_coordinate) {
+    if (summarize_mdc) {
+      df <- result$original_data
+      mdc_rank <- result$mdc_summary
+
+      rank1 <- names(mdc_rank)[which.max(mdc_rank)]
+      rank3 <- names(mdc_rank)[which.min(mdc_rank)]
+      rank2 <- names(mdc_rank)[-c(which(mdc_rank == max(mdc_rank), arr.ind = TRUE), which(mdc_rank == min(mdc_rank), arr.ind = TRUE))]
+
+      df <- df |>
+        mutate(final_lat = case_when(
+          comparison_cep_input_output_1 == 1 & comparison_cep_input_output_2 == 1 & comparison_cep_input_output_3 == 1 ~ case_when(
+            endsWith(shortest_distance, "1_2") ~ case_when(
+              endsWith(rank1, "1") & endsWith(rank2, "2") | endsWith(rank3, "2") ~ lat1,
+              endsWith(rank2, "1") & endsWith(rank3, "2") ~ lat1,
+              endsWith(rank2, "1") & endsWith(rank1, "2") ~ lat2,
+              endsWith(rank3, "1") & endsWith(rank1, "2") | endsWith(rank2, "2") ~ lat2
+            ),
+            endsWith(shortest_distance, "1_3") ~ case_when(
+              endsWith(rank1, "1") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lat1,
+              endsWith(rank2, "1") & endsWith(rank3, "3") ~ lat1,
+              endsWith(rank2, "1") & endsWith(rank1, "3") ~ lat3,
+              endsWith(rank3, "1") & endsWith(rank1, "3") | endsWith(rank2, "3") ~ lat3
+            ),
+            endsWith(shortest_distance, "2_3") ~ case_when(
+              endsWith(rank1, "2") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lat2,
+              endsWith(rank2, "2") & endsWith(rank3, "3") ~ lat2,
+              endsWith(rank2, "2") & endsWith(rank1, "3") ~ lat3,
+              endsWith(rank3, "2") & endsWith(rank1, "3") | endsWith(rank2, "3") ~ lat3
+            )
+          ),
+          comparison_cep_input_output_1 == 1 & comparison_cep_input_output_2 == 1 & comparison_cep_input_output_3 == 0 ~ case_when(
+            endsWith(shortest_distance, "1_2") ~ case_when(
+              endsWith(rank1, "1") & endsWith(rank2, "2") | endsWith(rank3, "2") ~ lat1,
+              endsWith(rank2, "1") & endsWith(rank3, "2") ~ lat1,
+              endsWith(rank2, "1") & endsWith(rank1, "2") ~ lat2,
+              endsWith(rank3, "1") & endsWith(rank1, "2") | endsWith(rank2, "2") ~ lat2
+            ),
+            endsWith(shortest_distance, "1_3") ~ lat1,
+            endsWith(shortest_distance, "2_3") ~ lat2
+          ),
+          comparison_cep_input_output_1 == 1 & comparison_cep_input_output_2 == 0 & comparison_cep_input_output_3 == 1 ~ case_when(
+            endsWith(shortest_distance, "1_2") ~ lat1,
+            endsWith(shortest_distance, "1_3") ~ case_when(
+              endsWith(rank1, "1") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lat1,
+              endsWith(rank2, "1") & endsWith(rank3, "3") ~ lat1,
+              endsWith(rank2, "1") & endsWith(rank1, "3") ~ lat3,
+              endsWith(rank3, "1") & endsWith(rank1, "3") | endsWith(rank2, "3") ~ lat3
+            ),
+            endsWith(shortest_distance, "2_3") ~ lat3
+          ),
+          comparison_cep_input_output_1 == 0 & comparison_cep_input_output_2 == 1 & comparison_cep_input_output_3 == 1 ~ case_when(
+            endsWith(shortest_distance, "1_2") ~ lat2,
+            endsWith(shortest_distance, "1_3") ~ lat1,
+            endsWith(shortest_distance, "2_3") ~ case_when(
+              endsWith(rank1, "2") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lat2,
+              endsWith(rank2, "2") & endsWith(rank3, "3") ~ lat2,
+              endsWith(rank2, "2") & endsWith(rank1, "3") ~ lat3,
+              endsWith(rank3, "2") & endsWith(rank1, "3") | endsWith(rank2, "3") ~ lat3
+            )
+          ),
+          comparison_cep_input_output_1 == 1 & comparison_cep_input_output_2 == 0 & comparison_cep_input_output_3 == 0 |
+            comparison_cep_input_output_1 == 1 & is.na(comparison_cep_input_output_2) & is.na(comparison_cep_input_output_3) ~ lat1,
+          comparison_cep_input_output_1 == 0 & comparison_cep_input_output_2 == 1 & comparison_cep_input_output_3 == 0 |
+            is.na(comparison_cep_input_output_1) & comparison_cep_input_output_2 == 1 & is.na(comparison_cep_input_output_3) ~ lat2,
+          comparison_cep_input_output_1 == 0 & comparison_cep_input_output_2 == 0 & comparison_cep_input_output_3 == 1 |
+            is.na(comparison_cep_input_output_1) & is.na(comparison_cep_input_output_2) & comparison_cep_input_output_3 == 1 ~ lat3,
+          comparison_cep_input_output_1 == 0 & comparison_cep_input_output_2 == 0 & comparison_cep_input_output_3 == 0 |
+            is.na(comparison_cep_input_output_1) & is.na(comparison_cep_input_output_2) & is.na(comparison_cep_input_output_3) ~ case_when(
+              endsWith(shortest_distance, "1_2") ~ case_when(
+                endsWith(rank1, "1") & endsWith(rank2, "2") | endsWith(rank3, "2") ~ lat1,
+                endsWith(rank2, "1") & endsWith(rank3, "2") ~ lat1,
+                endsWith(rank2, "1") & endsWith(rank1, "2") ~ lat2,
+                endsWith(rank3, "1") & endsWith(rank1, "2") | endsWith(rank2, "2") ~ lat2
+              ),
+              endsWith(shortest_distance, "1_3") ~ case_when(
+                endsWith(rank1, "1") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lat1,
+                endsWith(rank2, "1") & endsWith(rank3, "3") ~ lat1,
+                endsWith(rank2, "1") & endsWith(rank1, "3") ~ lat3,
+                endsWith(rank3, "1") & endsWith(rank1, "3") | endsWith(rank2, "3") ~ lat3
+              ),
+              endsWith(shortest_distance, "2_3") ~ case_when(
+                endsWith(rank1, "2") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lat2,
+                endsWith(rank2, "2") & endsWith(rank3, "3") ~ lat2,
+                endsWith(rank2, "2") & endsWith(rank1, "3") ~ lat3,
+                endsWith(rank3, "2") & endsWith(rank1, "3") | endsWith(rank2, "3") ~ lat3
+              ),
+              startsWith(shortest_distance, "just lat1") ~ lat1,
+              startsWith(shortest_distance, "just lat2") ~ lat2,
+              startsWith(shortest_distance, "just lat3") ~ lat3,
+              startsWith(shortest_distance, "No") ~ NA
+
+
+            )
+        ),
+        final_lon = case_when(
+          comparison_cep_input_output_1 == 1 & comparison_cep_input_output_2 == 1 & comparison_cep_input_output_3 == 1 ~ case_when(
+            endsWith(shortest_distance, "1_2") ~ case_when(
+              endsWith(rank1, "1") & endsWith(rank2, "2") | endsWith(rank3, "2") ~ lon1,
+              endsWith(rank2, "1") & endsWith(rank3, "2") ~ lon1,
+              endsWith(rank2, "1") & endsWith(rank1, "2") ~ lon2,
+              endsWith(rank3, "1") & endsWith(rank1, "2") | endsWith(rank2, "2") ~ lon2
+            ),
+            endsWith(shortest_distance, "1_3") ~ case_when(
+              endsWith(rank1, "1") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lon1,
+              endsWith(rank2, "1") & endsWith(rank3, "3") ~ lon1,
+              endsWith(rank2, "1") & endsWith(rank1, "3") ~ lon3,
+              endsWith(rank3, "1") & endsWith(rank1, "3") | endsWith(rank2, "3") ~ lon3
+            ),
+            endsWith(shortest_distance, "2_3") ~ case_when(
+              endsWith(rank1, "2") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lon2,
+              endsWith(rank2, "2") & endsWith(rank3, "3") ~ lon2,
+              endsWith(rank2, "2") & endsWith(rank1, "3") ~ lon3,
+              endsWith(rank3, "2") & endsWith(rank1, "3") | endsWith(rank2, "3") ~ lon3
+            )
+          ),
+          comparison_cep_input_output_1 == 1 & comparison_cep_input_output_2 == 1 & comparison_cep_input_output_3 == 0 ~ case_when(
+            endsWith(shortest_distance, "1_2") ~ case_when(
+              endsWith(rank1, "1") & endsWith(rank2, "2") | endsWith(rank3, "2") ~ lon1,
+              endsWith(rank2, "1") & endsWith(rank3, "2") ~ lon1,
+              endsWith(rank2, "1") & endsWith(rank1, "2") ~ lon2,
+              endsWith(rank3, "1") & endsWith(rank1, "2") | endsWith(rank2, "2") ~ lon2
+            ),
+            endsWith(shortest_distance, "1_3") ~ lon1,
+            endsWith(shortest_distance, "2_3") ~ lon2
+          ),
+          comparison_cep_input_output_1 == 1 & comparison_cep_input_output_2 == 0 & comparison_cep_input_output_3 == 1 ~ case_when(
+            endsWith(shortest_distance, "1_2") ~ lon1,
+            endsWith(shortest_distance, "1_3") ~ case_when(
+              endsWith(rank1, "1") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lon1,
+              endsWith(rank2, "1") & endsWith(rank3, "3") ~ lon1,
+              endsWith(rank2, "1") & endsWith(rank1, "3") ~ lon3,
+              endsWith(rank3, "1") & endsWith(rank1, "3") | endsWith(rank2, "3") ~ lon3
+            ),
+            endsWith(shortest_distance, "2_3") ~ lon3
+          ),
+          comparison_cep_input_output_1 == 0 & comparison_cep_input_output_2 == 1 & comparison_cep_input_output_3 == 1 ~ case_when(
+            endsWith(shortest_distance, "1_2") ~ lon3,
+            endsWith(shortest_distance, "1_3") ~ lat1,
+            endsWith(shortest_distance, "2_3") ~ case_when(
+              endsWith(rank1, "2") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lon2,
+              endsWith(rank2, "2") & endsWith(rank3, "3") ~ lon2,
+              endsWith(rank2, "2") & endsWith(rank1, "3") ~ lon3,
+              endsWith(rank3, "2") & endsWith(rank1, "3") | endsWith(rank2, "3") ~ lon3
+            )
+          ),
+          comparison_cep_input_output_1 == 1 & comparison_cep_input_output_2 == 0 & comparison_cep_input_output_3 == 0 |
+            comparison_cep_input_output_1 == 1 & is.na(comparison_cep_input_output_2) & is.na(comparison_cep_input_output_3) ~ lon1,
+          comparison_cep_input_output_1 == 0 & comparison_cep_input_output_2 == 1 & comparison_cep_input_output_3 == 0 |
+            is.na(comparison_cep_input_output_1) & comparison_cep_input_output_2 == 1 & is.na(comparison_cep_input_output_3) ~ lon2,
+          comparison_cep_input_output_1 == 0 & comparison_cep_input_output_2 == 0 & comparison_cep_input_output_3 == 1 |
+            is.na(comparison_cep_input_output_1) & is.na(comparison_cep_input_output_2) & comparison_cep_input_output_3 == 1 ~ lon3,
+          comparison_cep_input_output_1 == 0 & comparison_cep_input_output_2 == 0 & comparison_cep_input_output_3 == 0 |
+            is.na(comparison_cep_input_output_1) & is.na(comparison_cep_input_output_2) & is.na(comparison_cep_input_output_3) ~ case_when(
+              endsWith(shortest_distance, "1_2") ~ case_when(
+                endsWith(rank1, "1") & endsWith(rank2, "2") | endsWith(rank3, "2") ~ lon1,
+                endsWith(rank2, "1") & endsWith(rank3, "2") ~ lon1,
+                endsWith(rank2, "1") & endsWith(rank1, "2") ~ lon2,
+                endsWith(rank3, "1") & endsWith(rank1, "2") | endsWith(rank2, "2") ~ lon2
+              ),
+              endsWith(shortest_distance, "1_3") ~ case_when(
+                endsWith(rank1, "1") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lon1,
+                endsWith(rank2, "1") & endsWith(rank3, "3") ~ lon1,
+                endsWith(rank2, "1") & endsWith(rank1, "3") ~ lon3,
+                endsWith(rank3, "1") & endsWith(rank1, "3") | endsWith(rank2, "3") ~ lon3
+              ),
+              endsWith(shortest_distance, "2_3") ~ case_when(
+                endsWith(rank1, "2") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lon2,
+                endsWith(rank2, "2") & endsWith(rank3, "3") ~ lon2,
+                endsWith(rank2, "2") & endsWith(rank1, "3") ~ lon3,
+                endsWith(rank3, "2") & endsWith(rank1, "3") | endsWith(rank2, "3") ~ lon3
+              ),
+              startsWith(shortest_distance, "just lat1") ~ lon1,
+              startsWith(shortest_distance, "just lat2") ~ lon2,
+              startsWith(shortest_distance, "just lat3") ~ lon3,
+              startsWith(shortest_distance, "No") ~ NA
+            )
+        )
+        )
+
+      result$original_data <- df
+
+    }
+
+
+  }
+
+  return(result)
+
 }
+
 

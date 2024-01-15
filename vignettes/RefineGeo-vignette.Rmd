@@ -229,9 +229,10 @@ result <- get_best_coords(df, "lat1", "lon1", "lat2", "lon2", "lat3", "lon3", "d
                            mdc = TRUE, 
                            summarize_mdc = TRUE,
                            cep_confirmation = TRUE,
-                           subsector_as_zip = TRUE,
+                           subsector_as_zip = FALSE,
                            cep_comparison = TRUE,
-                           strict_check = TRUE,
+                           strict_check = FALSE,
+                           final_coordinate = TRUE,
                            input_addr = "input_addr",
                            output_addr_1 = "output_addr_1",
                            output_addr_2 = "output_addr_2",
@@ -251,11 +252,11 @@ If only one `output_addr_*` shares CEP equality with the `input_addr`, it is sel
 
 The process maintains a consistent logic even when no CEP equality exists between any `output_addr_*` and the `input_addr.` In such cases, it examines the short_distance when coordinates are available for three `output_addr_*`. It selects the closest one, followed by a tiebreaker based on the mdc. When only two coordinates are available with no CEP equality, it relies solely on the `mdc` rank to pick the better coordinate. If there's only one `output_addr_*` available without CEP equality, that coordinate is chosen.
 
+The final coordinate is choosen by the MDC methology after the CEP equality check, distance evaluation and the MDC summary rank as tiebreaker.
+
 The flowchart succinctly illustrates the entire process of selecting the final coordinate.
 
 <img src="https://pedrotl.github.io/images/Chart_one.png" alt="Flowchart" width="100%">
-
-**Note: Final coordinate selection is still in development**
 
 ## Conclusion 
 

@@ -309,7 +309,7 @@ get_best_coords <- function(df, lat_col1, lon_col1, lat_col2, lon_col2, lat_col3
           ),
           comparison_cep_input_output_1 == 0 & comparison_cep_input_output_2 == 1 & comparison_cep_input_output_3 == 1 ~ case_when(
             endsWith(shortest_distance, "1_2") ~ lon3,
-            endsWith(shortest_distance, "1_3") ~ lat1,
+            endsWith(shortest_distance, "1_3") ~ lon1,
             endsWith(shortest_distance, "2_3") ~ case_when(
               endsWith(rank1, "2") & endsWith(rank2, "3") | endsWith(rank3, "3") ~ lon2,
               endsWith(rank2, "2") & endsWith(rank3, "3") ~ lon2,

@@ -37,7 +37,7 @@ At present, the toolkit comprises five primary functions:
     + Identifies the two services with the shortest distance points.
     + Extracts CEP patterns from addresses.
     + Compares CEP equality between the CEPs found in the input address and the three output addresses. 
-    + Computes the Method of Double Confirmation (MDC), enabling the ranking of each service.  [MDC Reference](https://feac.org.br/wp-content/uploads/2023/10/Geocodificacao_FEAC.pdf?portfolioCats=3100%2C3850%2C4090), enabling to rank up each service. 
+    + Computes the Method of Double Confirmation (MDC), enabling the ranking of each service.  [MDC Reference](https://feac.org.br/wp-content/uploads/2023/10/Geocodificacao_FEAC.pdf?portfolioCats=3100%2C3850%2C4090).
     + Select the best coordinate based on the methodology from the [study](https://feac.org.br/wp-content/uploads/2023/10/Geocodificacao_FEAC.pdf?portfolioCats=3100%2C3850%2C4090).
 
 ## Basic Usage

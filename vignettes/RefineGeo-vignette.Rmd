@@ -29,7 +29,9 @@ You can install the development version of RefineGeo from [GitHub](https://githu
 devtools::install_github("PedroTL/RefineGeo")
 ```
 
-```{r setup}
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+# install.packages("devtools")
+devtools::install_github("PedroTL/RefineGeo")
 library(RefineGeo)
 ```
 

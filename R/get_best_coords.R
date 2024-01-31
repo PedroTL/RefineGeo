@@ -2,6 +2,8 @@
 #'
 #' Calculates distances between latitude and longitude pairs, creating corresponding distance columns.
 #' Adds a column identifying the shortest distance source if specified.
+#' Adds a column for each geocoding service imputing the MDC.
+#'
 #'
 #' @param df A dataframe containing latitude, longitude and address columns.
 #' @param lat_col1,lon_col1,lat_col2,lon_col2,lat_col3,lon_col3 Column name for each latidude and longitude provided by the three Geocoding services.

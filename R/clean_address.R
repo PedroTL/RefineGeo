@@ -40,6 +40,8 @@ clean_address <- function(x) {
   # Remove punctuation
   cleaned_address <- stringr::str_replace_all(x, "[[:punct:]]", "")
 
+  cleaned_address <- stringr::str_replace_all(x, "[[:punct:]´]", "")
+
   # Convert to uppercase
   cleaned_address <- toupper(cleaned_address)
 

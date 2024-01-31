@@ -69,6 +69,7 @@ An object of the same type as \code{.data}. The output has the fallowing proprie
 \description{
 Calculates distances between latitude and longitude pairs, creating corresponding distance columns.
 Adds a column identifying the shortest distance source if specified.
+Adds a column for each geocoding service imputing the MDC.
 }
 \details{
 This function computes distances between latitude and longitude pairs, generating new columns in the dataframe for each pairwise distance based on the given \code{dist_prefix}, indicating the source of the shortest distance obtained from Geocoding services.
